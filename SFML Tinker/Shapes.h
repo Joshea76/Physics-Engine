@@ -51,13 +51,16 @@ public:
         this->position = position;
         this->mass = mass;
         this->rotation = rotation;
+        sections.reset();
     }
     RigidBody(sf::Vector2f position, float mass){
         this->position = position;
         this->mass = mass;
+        sections.reset();
     }
     RigidBody(sf::Vector2f position) {
         this->position = position;
+        sections.reset();
     }
 
     void setID(int id) {
@@ -106,8 +109,8 @@ public:
 
         //Calc Linear Velocity
         sf::Vector2f acceleration = sf::Vector2f(ScaleVector(forceAccum, this->inversemass));
-        linearVelocity += ScaleVector(acceleration, dt);
-        //linearVelocity = MultiplyVectors(linearVelocity,(pow(linearDamping, dt)));
+        this->linearVelocity += ScaleVector(acceleration, dt);
+        linearVelocity = MultiplyVectors(linearVelocity,(pow(linearDamping, dt)));
 
         // Update Linear Pos
         this->position = AddVectors(this->position, ScaleVector(linearVelocity, dt));

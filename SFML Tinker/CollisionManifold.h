@@ -642,7 +642,7 @@ public:
 		}
 
 		// Multiply by 0.5 to seperate circles the same
-		float depth = std::abs((lengthofVector(distance) - sumRadii) * 0.5f);
+		float depth = (lengthofVector(distance) - sumRadii) * 0.5f;
 		sf::Vector2f normal = sf::Vector2f(distance);
 		normal = normalise(normal);
 		float distanceToPoint = a.getRadius() - depth; 
@@ -1161,19 +1161,19 @@ public:
 
 		float e = std::min(a.getCor(), b.getCor());
 		sf::Vector2f DeltaVel = SubtractVectors(ScaleVector(-relativeVel, e), relativeVel);
-		float numerator = (-(1.0f * e) * dotProduct(relativeVel, relativeNormal));
+		float numerator = (-(1.0f + e) * dotProduct(relativeVel, relativeNormal));
 		//float numerator = (-(1.0f + e) * dotProduct(DeltaVel, relativeNormal));
-		float j = numerator / invMassSum;
-		//sf::Vector2f j = ScaleVector(DeltaVel, 1 / invMassSum);
-		if (m.getContactPoints().size() > 0 && j != 0.0f) {
-			j = j / float(m.getContactPoints().size());
-		}
+		//float j = numerator / invMassSum;
+		sf::Vector2f j = ScaleVector(DeltaVel, 1 / invMassSum);
+		//if (m.getContactPoints().size() > 0 && j != 0.0f) {
+			//j = j / float(m.getContactPoints().size());
+		//}
 
-		sf::Vector2f impulse = sf::Vector2f(ScaleVector(relativeNormal, j));
-		//a.setLinearVelocity(sf::Vector2f(AddVectors(a.getLinearVelocity(), (ScaleVector(impulse, (-invMass1))))));
-		a.addLocalForce(ScaleVector(-impulse, 1));
-		//b.setLinearVelocity(sf::Vector2f(AddVectors(b.getLinearVelocity(), (ScaleVector(impulse, (-invMass2))))));
-		b.addLocalForce(ScaleVector(impulse, 1));
+		sf::Vector2f impulse = sf::Vector2f(MultiplyVectors(relativeNormal, j));
+		a.setLinearVelocity(sf::Vector2f(AddVectors(a.getLinearVelocity(), (ScaleVector(impulse, (-invMass1))))));
+		//a.addLocalForce(ScaleVector(-impulse, 1));
+		b.setLinearVelocity(sf::Vector2f(AddVectors(b.getLinearVelocity(), (ScaleVector(impulse, (invMass2))))));
+		//b.addLocalForce(ScaleVector(impulse, 1));
 		return swapped == false ? std::tuple<RigidBody, RigidBody>(a, b) : std::tuple<RigidBody, RigidBody>(b, a);
 	}
 	RigidBody applyImpulse(RigidBody rb, CollisionManifold m, sf::Vector2f g, int sect) {

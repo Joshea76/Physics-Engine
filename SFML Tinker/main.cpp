@@ -260,17 +260,17 @@ void testScreen() {
     */
 
 
-    ForceGenerator gravity = ForceGenerator(sf::Vector2f(0.f, 0.95f));
+    ForceGenerator gravity = ForceGenerator(sf::Vector2f(0.f, 0.0f));
     std::vector<ForceGenerator> globalforces = { gravity };
     PhysicsSystem physics = PhysicsSystem(globalforces);
 
     std::vector<int> objIDs = { 0 };
 
-    Circle circ1(((objIDs.back()) + 1), sf::Vector2f(100.f, 745.f), 25.f, 0.0f, sf::Color(255.f, 0.f, 0.f));
+    Circle circ1(((objIDs.back()) + 1), sf::Vector2f(500.f, 100.f), 25.f, 0.0f, sf::Color(255.f, 0.f, 0.f));
     objIDs.push_back(objIDs.back() + 1); // create id
     circ1.rigidbody.setMass(10.f);
     //circ1.rigidbody.addLocalForce(sf::Vector2f(-100.f, -100.f));
-    Circle circ2(((objIDs.back()) + 1), sf::Vector2f(150.f, 745.f), 25.f, 0.0f, sf::Color(0.f, 0.f, 255.f));
+    Circle circ2(((objIDs.back()) + 1), sf::Vector2f(150.f, 505.f), 25.f, 0.0f, sf::Color(0.f, 0.f, 255.f));
     objIDs.push_back(objIDs.back() + 1); // create id
     circ2.rigidbody.setMass(10.f);
     
@@ -281,16 +281,16 @@ void testScreen() {
     Circle circ4(((objIDs.back()) + 1), sf::Vector2f(225.f, 200.f), 25.f, 0.0f, sf::Color(125.f, 125.f, 0.f));
     objIDs.push_back(objIDs.back() + 1); // create id
     circ4.rigidbody.setMass(10.f);
-    Circle circ5(((objIDs.back()) + 1), sf::Vector2f(125.f, 60.f), 25.f, 0.0f, sf::Color(0.f, 125.f, 125.f));
+    Circle circ5(((objIDs.back()) + 1), sf::Vector2f(60.f, 100.f), 25.f, 0.0f, sf::Color(0.f, 125.f, 125.f));
     objIDs.push_back(objIDs.back() + 1); // create id
     circ5.rigidbody.setMass(10.f);
-    //circ4.rigidbody.addLocalForce(sf::Vector2f(0.f, -0.01f));
+    circ5.rigidbody.addLocalForce(sf::Vector2f(200.f, 00.f));
     
     std::vector<Circle> circles{};
     std::vector<Rect> rectangles{};
 
     circles.push_back(circ1);
-    circles.push_back(circ2);
+    //circles.push_back(circ2);
     //circles.push_back(circ3);
     //circles.push_back(circ4);
     circles.push_back(circ5);
@@ -300,7 +300,7 @@ void testScreen() {
 
     std::vector<RigidBody> Objects;
     Objects.push_back(circ1.rigidbody);
-    Objects.push_back(circ2.rigidbody);
+    //Objects.push_back(circ2.rigidbody);
     //Objects.push_back(circ3.rigidbody);
     //Objects.push_back(circ4.rigidbody);
     Objects.push_back(circ5.rigidbody);
@@ -406,13 +406,14 @@ void testScreen() {
                         bodies2.push_back(r2);
                         collisions.push_back(result);
                         std::cout << "HIT" << std::endl;
-                        std::cout << "B1 " << bodies1.back().getLinearVelocity().x << " , " << bodies1.back().getLinearVelocity().y << "  ";
-                        std::cout << "B2 " << bodies2.back().getLinearVelocity().x << " , " << bodies1.back().getLinearVelocity().y << std::endl;
+                        
 
 
                     }
+                    std::cout << "B1 " << Objects[i].getLinearVelocity().x << " , " << Objects[i].getLinearVelocity().y << "  " << Objects[i].getForceAccum().y << " ||  ";
+                    std::cout << "B2 " << Objects[j].getLinearVelocity().x << " , " << Objects[j].getLinearVelocity().y << "  " << Objects[j].getForceAccum().y << std::endl;
 
-                    int impulseIterations = 6;
+                    int impulseIterations = 1;
                     for (int k = 0; k < impulseIterations; k++) {
                         for (int l = 0; l < collisions.size(); l++) {
                             int jSize = collisions[l].getContactPoints().size();
