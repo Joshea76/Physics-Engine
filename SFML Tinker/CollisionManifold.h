@@ -1140,6 +1140,7 @@ public:
 
 	std::tuple<RigidBody, RigidBody>  applyImpulse(RigidBody a, RigidBody b, CollisionManifold m) {
 		bool swapped = false;
+
 		if (a.getPosition().x > b.getPosition().x || a.getPosition().y < b.getPosition().y) {
 			RigidBody tmp = a;
 			a = b;
@@ -1161,7 +1162,7 @@ public:
 
 		float e = std::min(a.getCor(), b.getCor());
 		sf::Vector2f DeltaVel = SubtractVectors(ScaleVector(-relativeVel, e), relativeVel);
-		float numerator = (-(1.0f + e) * dotProduct(relativeVel, relativeNormal));
+		//float numerator = (-(1.0f + e) * dotProduct(relativeVel, relativeNormal));
 		//float numerator = (-(1.0f + e) * dotProduct(DeltaVel, relativeNormal));
 		//float j = numerator / invMassSum;
 		sf::Vector2f j = ScaleVector(DeltaVel, 1 / invMassSum);
@@ -1170,22 +1171,25 @@ public:
 		//}
 
 		sf::Vector2f impulse = sf::Vector2f(MultiplyVectors(relativeNormal, j));
-		a.setLinearVelocity(sf::Vector2f(AddVectors(a.getLinearVelocity(), (ScaleVector(impulse, (-invMass1))))));
+		a.setLinearVelocity(sf::Vector2f(AddVectors(a.getLinearVelocity(), (ScaleVector(impulse, (invMass1))))));
 		//a.addLocalForce(ScaleVector(-impulse, 1));
-		b.setLinearVelocity(sf::Vector2f(AddVectors(b.getLinearVelocity(), (ScaleVector(impulse, (invMass2))))));
+		b.setLinearVelocity(sf::Vector2f(AddVectors(b.getLinearVelocity(), (ScaleVector(impulse, (-invMass2))))));
 		//b.addLocalForce(ScaleVector(impulse, 1));
 		return swapped == false ? std::tuple<RigidBody, RigidBody>(a, b) : std::tuple<RigidBody, RigidBody>(b, a);
 	}
 	RigidBody applyImpulse(RigidBody rb, CollisionManifold m, sf::Vector2f g, int sect) {
 		//For collisions with bounds
-		sf::Vector2f Vel = rb.getLinearVelocity();
-		sf::Vector2f relativeNormal = sf::Vector2f(normalise(m.getNormal()));
+		sf::Vector2f Vel = SubtractVectors(sf::Vector2f(0.f,0.f),rb.getLinearVelocity());
+		sf::Vector2f relativeNormal = sf::Vector2f((normalise(m.getNormal())));
+		//if (dotProduct(Vel, abs(relativeNormal)) > 0.f) { Vel = ScaleVector(Vel, -1.f); }
 
 
+		float invMass = rb.getInverseMass();
 		float e = rb.getCor();
-		float numerator = (-(1.f * e ) * dotProduct(Vel, relativeNormal));
-		float j;
-		sf::Vector2f forceAccum = rb.getForceAccum();
+		//float numerator = (-(1.f + e) * dotProduct(Vel, relativeNormal));
+		sf::Vector2f deltaVel = SubtractVectors(ScaleVector((-abs(Vel)), e), abs(Vel));
+		sf::Vector2f j = ScaleVector(deltaVel, 1 / invMass);
+		//sf::Vector2f forceAccum = rb.getForceAccum();
 		/*
 		int k = 4; 
 		if (abs(rb.getLinearVelocity().y) < 1.f && abs(relativeNormal.x) < abs(relativeNormal.y)) {
@@ -1255,44 +1259,41 @@ public:
 			j = (numerator) / (rb.getInverseMass());
 		}
 		*/
+		
 		switch (sect) {
 		case 0:
-			j = (numerator) / (rb.getInverseMass());
+			relativeNormal.y = (abs(relativeNormal.y) * 1.f);
+			rb.setPosition(sf::Vector2f(rb.getPosition().x, rb.getPosition().y + m.getDepth()));
+			j.y = abs(j.y);
 			break;
 		case 1:
-			if (abs(rb.getLinearVelocity().x) < 1.f) {
-				j = (numerator/e) / (rb.getInverseMass());
-				relativeNormal.x = abs(relativeNormal.x) * -1.f;
-			}
-			else {
-				j = (numerator) / (rb.getInverseMass());
-			}
+			//if (abs(rb.getLinearVelocity().x) < 1.f) {
+			relativeNormal.x = abs(relativeNormal.x) * -1.f;
+			rb.setPosition(sf::Vector2f(rb.getPosition().x - m.getDepth(), rb.getPosition().y));
+			j.x = abs(j.x);
 			break;
 		case 2:
-			if (abs(rb.getLinearVelocity().y) < 1.f) {
-				j = abs(1.f * ((lengthofVector(g)) * rb.getMass())) + abs(numerator / rb.getInverseMass()) + abs(forceAccum.y / rb.getInverseMass());
-				relativeNormal.y = abs(relativeNormal.y) * -1.f;
-			}
-			else {
-				j = (numerator) / (rb.getInverseMass());
-			}
+			//if (abs(rb.getLinearVelocity().y) < 1.f) {
+				//j = abs(1.f * ((lengthofVector(g)) * rb.getMass())) + abs(numerator / rb.getInverseMass()) + abs(forceAccum.y / rb.getInverseMass());
+			relativeNormal.y = abs(relativeNormal.y) * -1.f;
+			rb.setPosition(sf::Vector2f(rb.getPosition().x, rb.getPosition().y - m.getDepth()));
+			j.y = abs(j.y);
 			break;
 		case 3:
-			if (abs(rb.getLinearVelocity().x) < 1.f) {
-				j = numerator / (rb.getInverseMass());
-				relativeNormal.x = abs(relativeNormal.x);
-			}
-			else {
-				j = (numerator) / (rb.getInverseMass());
-			}
+			//if (abs(rb.getLinearVelocity().x) < 1.f) {
+			relativeNormal.x = abs(relativeNormal.x);
+			rb.setPosition(sf::Vector2f(rb.getPosition().x + m.getDepth(), rb.getPosition().y + m.getDepth()));
+			j.x = abs(j.x);
 			break;
 
 		}
 		
 		
+		
 		//j = numerator / (rb.getInverseMass());
-		sf::Vector2f impulse = sf::Vector2f(ScaleVector(relativeNormal, j));
-		rb.addLocalForce(ScaleVector(impulse, 1));
+		sf::Vector2f impulse = sf::Vector2f(MultiplyVectors(relativeNormal, j));
+		//rb.addLocalForce(ScaleVector(impulse, 1));
+		rb.setLinearVelocity(sf::Vector2f(AddVectors(rb.getLinearVelocity(), (ScaleVector(impulse, (invMass))))));
 		return rb;
 	}
 };

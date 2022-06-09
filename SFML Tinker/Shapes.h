@@ -138,6 +138,7 @@ public:
 
     sf::Vector2f getLinearVelocity() { return this->linearVelocity; }
     void setLinearVelocity(sf::Vector2f v) { this->linearVelocity = v; }
+    void addLinearVelocity(sf::Vector2f v) { this->linearVelocity = AddVectors(this->linearVelocity, v); }
 
     float getAngularVelocty() { return this->angularVeclocity; }
     void setAngularVelocity(float v) { this->angularVeclocity = v; }

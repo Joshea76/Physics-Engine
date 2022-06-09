@@ -260,13 +260,13 @@ void testScreen() {
     */
 
 
-    ForceGenerator gravity = ForceGenerator(sf::Vector2f(0.f, 0.0f));
+    ForceGenerator gravity = ForceGenerator(sf::Vector2f(0.f, 0.95f));
     std::vector<ForceGenerator> globalforces = { gravity };
     PhysicsSystem physics = PhysicsSystem(globalforces);
 
     std::vector<int> objIDs = { 0 };
 
-    Circle circ1(((objIDs.back()) + 1), sf::Vector2f(500.f, 100.f), 25.f, 0.0f, sf::Color(255.f, 0.f, 0.f));
+    Circle circ1(((objIDs.back()) + 1), sf::Vector2f(700.f, 100.f), 25.f, 0.0f, sf::Color(255.f, 0.f, 0.f));
     objIDs.push_back(objIDs.back() + 1); // create id
     circ1.rigidbody.setMass(10.f);
     //circ1.rigidbody.addLocalForce(sf::Vector2f(-100.f, -100.f));
@@ -281,28 +281,30 @@ void testScreen() {
     Circle circ4(((objIDs.back()) + 1), sf::Vector2f(225.f, 200.f), 25.f, 0.0f, sf::Color(125.f, 125.f, 0.f));
     objIDs.push_back(objIDs.back() + 1); // create id
     circ4.rigidbody.setMass(10.f);
-    Circle circ5(((objIDs.back()) + 1), sf::Vector2f(60.f, 100.f), 25.f, 0.0f, sf::Color(0.f, 125.f, 125.f));
+    Circle circ5(((objIDs.back()) + 1), sf::Vector2f(60.f, 200.f), 25.f, 0.0f, sf::Color(0.f, 125.f, 125.f));
     objIDs.push_back(objIDs.back() + 1); // create id
     circ5.rigidbody.setMass(10.f);
-    circ5.rigidbody.addLocalForce(sf::Vector2f(200.f, 00.f));
+    circ5.rigidbody.addLocalForce(sf::Vector2f(-200.f, 00.f));
+    circ1.rigidbody.addLocalForce(sf::Vector2f(200.f, 00.f));
+
     
     std::vector<Circle> circles{};
     std::vector<Rect> rectangles{};
 
-    circles.push_back(circ1);
-    //circles.push_back(circ2);
+    //circles.push_back(circ1);
+    circles.push_back(circ2);
     //circles.push_back(circ3);
-    //circles.push_back(circ4);
+    circles.push_back(circ4);
     circles.push_back(circ5);
 
 
 
 
     std::vector<RigidBody> Objects;
-    Objects.push_back(circ1.rigidbody);
-    //Objects.push_back(circ2.rigidbody);
+    //Objects.push_back(circ1.rigidbody);
+    Objects.push_back(circ2.rigidbody);
     //Objects.push_back(circ3.rigidbody);
-    //Objects.push_back(circ4.rigidbody);
+    Objects.push_back(circ4.rigidbody);
     Objects.push_back(circ5.rigidbody);
 
     physics.setRigidBodies(Objects);
@@ -410,10 +412,10 @@ void testScreen() {
 
 
                     }
-                    std::cout << "B1 " << Objects[i].getLinearVelocity().x << " , " << Objects[i].getLinearVelocity().y << "  " << Objects[i].getForceAccum().y << " ||  ";
-                    std::cout << "B2 " << Objects[j].getLinearVelocity().x << " , " << Objects[j].getLinearVelocity().y << "  " << Objects[j].getForceAccum().y << std::endl;
+                    //std::cout << "B1 " << Objects[i].getLinearVelocity().x << " , " << Objects[i].getLinearVelocity().y << "  " << Objects[i].getForceAccum().y << " ||  ";
+                    //std::cout << "B2 " << Objects[j].getLinearVelocity().x << " , " << Objects[j].getLinearVelocity().y << "  " << Objects[j].getForceAccum().y << std::endl;
 
-                    int impulseIterations = 1;
+                    int impulseIterations = 6;
                     for (int k = 0; k < impulseIterations; k++) {
                         for (int l = 0; l < collisions.size(); l++) {
                             int jSize = collisions[l].getContactPoints().size();
@@ -439,6 +441,7 @@ void testScreen() {
 
                 }
             }
+            //std::cout << "B" << i << " " << Objects[i].getLinearVelocity().x << " , " << Objects[i].getLinearVelocity().y << "  " << Objects[i].getForceAccum().y << std::endl;
             circles = quadtree.sortCircles(circles);
             if (circles[i].rigidbody.sections.S1 || circles[i].rigidbody.sections.S2) { // Top wall
                 CollisionManifold wallCollide = IntersectionDetection().wallCollide(std::vector<sf::Vertex>{Bounds[0], Bounds[1]}, circles[i]);
@@ -450,7 +453,7 @@ void testScreen() {
                 CollisionManifold wallCollide = IntersectionDetection().wallCollide(std::vector<sf::Vertex>{Bounds[1], Bounds[2]}, circles[i]);
                 if (wallCollide != CollisionManifold() && wallCollide.isColliding()) {
                     Objects[i] = physics.applyImpulse(Objects[i], wallCollide, gravity.getForce(),1);
-                    std::cout << " Force for " << i << " : " << Objects[i].getForceAccum().x << std::endl;
+                    //std::cout << " Force for " << i << " : " << Objects[i].getForceAccum().x << std::endl;
                 }
             }
             if (circles[i].rigidbody.sections.S3 || circles[i].rigidbody.sections.S4) { // Bottom wall
@@ -463,7 +466,7 @@ void testScreen() {
                 CollisionManifold wallCollide = IntersectionDetection().wallCollide(std::vector<sf::Vertex>{Bounds[0], Bounds[3]}, circles[i]);
                 if (wallCollide != CollisionManifold() && wallCollide.isColliding()) {
                     Objects[i] = physics.applyImpulse(Objects[i], wallCollide, gravity.getForce(),3);
-                    std::cout << " Force for " << i << " : " << Objects[i].getForceAccum().x << std::endl;
+                    //std::cout << " Force for " << i << " : " << Objects[i].getForceAccum().x << std::endl;
                 }
             }
             circles[i].rigidbody.sections.reset();
