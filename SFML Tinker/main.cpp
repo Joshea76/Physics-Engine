@@ -268,7 +268,7 @@ void testScreen() {
 
     Circle circ1(((objIDs.back()) + 1), sf::Vector2f(700.f, 100.f), 25.f, 0.0f, sf::Color(255.f, 0.f, 0.f));
     objIDs.push_back(objIDs.back() + 1); // create id
-    circ1.rigidbody.setMass(10.f);
+    circ1.rigidbody.setMass(100.f);
     //circ1.rigidbody.addLocalForce(sf::Vector2f(-100.f, -100.f));
     Circle circ2(((objIDs.back()) + 1), sf::Vector2f(150.f, 505.f), 25.f, 0.0f, sf::Color(0.f, 0.f, 255.f));
     objIDs.push_back(objIDs.back() + 1); // create id
@@ -360,54 +360,22 @@ void testScreen() {
 
 
                     //if c1 and c2 are NOT NULL  AND Not infinte Mass ->
-                    if (Objects[i].sections.S1 && Objects[j].sections.S1) {
-                        try {
-                            Circle o1 = getCircleByID(circles, Objects[i].getID());
-                            Circle o2 = getCircleByID(circles, Objects[j].getID());
-                            if (o1 != Circle() && o2 != Circle()) {
+                    try {
+                        Circle o1 = getCircleByID(circles, Objects[i].getID());
+                        Circle o2 = getCircleByID(circles, Objects[j].getID());
+                        if (o1 != Circle() && o2 != Circle()) {
+                            if ((o1.rigidbody.sections.S1 && o2.rigidbody.sections.S1) ||
+                                (o1.rigidbody.sections.S2 && o2.rigidbody.sections.S2) ||
+                                (o1.rigidbody.sections.S3 && o2.rigidbody.sections.S3) ||
+                                (o1.rigidbody.sections.S4 && o2.rigidbody.sections.S4)) {
                                 //o1.rigidbody = r1;
                                 //o2.rigidbody = r2;
                                 result = Collisions().findcollisionfeatures(o1, o2);
                             }
                         }
-                        catch (std::exception e) {}
                     }
-                    if (Objects[i].sections.S2 && Objects[j].sections.S2) {
-                        try {
-                            Circle o1 = getCircleByID(circles, Objects[i].getID());
-                            Circle o2 = getCircleByID(circles, Objects[j].getID());
-                            if (o1 != Circle() && o2 != Circle()) {
-                                //o1.rigidbody = r1;
-                                //o2.rigidbody = r2;
-                                result = Collisions().findcollisionfeatures(o1, o2);
-                            }
-                        }
-                        catch (std::exception e) {}
-                    }
-                    if (Objects[i].sections.S3 && Objects[j].sections.S3) {
-                        try {
-                            Circle o1 = getCircleByID(circles, Objects[i].getID());
-                            Circle o2 = getCircleByID(circles, Objects[j].getID());
-                            if (o1 != Circle() && o2 != Circle()) {
-                                //o1.rigidbody = r1;
-                                //o2.rigidbody = r2;
-                                result = Collisions().findcollisionfeatures(o1, o2);
-                            }
-                        }
-                        catch (std::exception e) {}
-                    }
-                    if (Objects[i].sections.S4 && Objects[j].sections.S4) {
-                        try {
-                            Circle o1 = getCircleByID(circles, Objects[i].getID());
-                            Circle o2 = getCircleByID(circles, Objects[j].getID());
-                            if (o1 != Circle() && o2 != Circle()) {
-                                //o1.rigidbody = r1;
-                                //o2.rigidbody = r2;
-                                result = Collisions().findcollisionfeatures(o1, o2);
-                            }
-                        }
-                        catch (std::exception e) {}
-                    }
+                    catch (std::exception e) {}
+                    
                     /*
                     try {
                         Rect o1 = getRectByID(rectangles, Objects[i].getID());
@@ -597,7 +565,6 @@ void BoxesTesting() {
     std::vector<RigidBody> bodies2 = {};
 
     while (window.isOpen()) {
-        Sleep(10);
         sf::Event evnt;
         while (window.pollEvent(evnt)) {
             if (evnt.type == sf::Event::Closed) {
@@ -671,7 +638,7 @@ int main() {
     //Click();
     //ClickClass();
     //CollisionTesting();
-    testScreen();
-    //BoxesTesting();
+    //testScreen();
+    BoxesTesting();
     return 0;
 }

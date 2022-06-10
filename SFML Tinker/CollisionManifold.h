@@ -643,7 +643,7 @@ public:
 
 		// Multiply by 0.5 to seperate circles the same
 		float depth = (lengthofVector(distance) - sumRadii) * 0.5f;
-		sf::Vector2f normal = sf::Vector2f(distance);
+		sf::Vector2f normal = distance;
 		normal = normalise(normal);
 		float distanceToPoint = a.getRadius() - depth; 
 		sf::Vector2f contactPoint = sf::Vector2f(AddVectors(a.rigidbody.getPosition(), (MultiplyVectors(normal, distance))));
@@ -1344,7 +1344,52 @@ public:
 
 	std::vector<Circle> sortCircles(std::vector<Circle> circles) {
 		for (int i = 0; i < circles.size(); i++) {
+			bool vInt = IntersectionDetection().lineandCircle(vLine, circles[i]);
+			bool hInt = IntersectionDetection().lineandCircle(hLine, circles[i]);
 
+			if (vInt && hInt) { 
+				circles[i].rigidbody.sections.setAllTrue(); }
+			else {
+				if (hInt) {
+					if (circles[i].rigidbody.getPosition().x > vLine[0].x) {
+						circles[i].rigidbody.sections.S2 = true;
+						circles[i].rigidbody.sections.S3 = true;
+					}
+					else{
+						circles[i].rigidbody.sections.S1 = true;
+						circles[i].rigidbody.sections.S4 = true;
+					}
+				}
+				else if (vInt) {
+					if (circles[i].rigidbody.getPosition().y > hLine[0].y) {
+						circles[i].rigidbody.sections.S4 = true;
+						circles[i].rigidbody.sections.S3 = true;
+					}
+					else {
+						circles[i].rigidbody.sections.S1 = true;
+						circles[i].rigidbody.sections.S2 = true;
+					}
+				}
+				else {
+					if (circles[i].rigidbody.getPosition().x > vLine[0].x) {
+						if (circles[i].rigidbody.getPosition().y > hLine[0].y) {
+							circles[i].rigidbody.sections.S3 = true;
+						}
+						else {
+							circles[i].rigidbody.sections.S2 = true;
+						}
+					}
+					else {
+						if (circles[i].rigidbody.getPosition().y > hLine[0].y) {
+							circles[i].rigidbody.sections.S4 = true;
+						}
+						else {
+							circles[i].rigidbody.sections.S1 = true;
+						}
+					}
+				}
+			}
+			/*
 			if (circles[i].rigidbody.getPosition().x > vLine[0].x) {
 				circles[i].rigidbody.sections.S2 = true;
 				circles[i].rigidbody.sections.S3 = true;
@@ -1385,56 +1430,12 @@ public:
 					}
 				}
 			}
+			*/
 		}
 		return circles;
 	}
 
-	std::vector<RigidBody> sortObjects(std::vector<RigidBody> objects) {
-		for (int i = 0; i < objects.size(); i++) {
-
-			if (objects[i].getPosition().x > vLine[0].x) {
-				objects[i].sections.S2 = true;
-				objects[i].sections.S3 = true;
-				if (!IntersectionDetection().lineandCircle(hLine, objects[i])) {
-					if (objects[i].getPosition().y > hLine[0].y) {
-						objects[i].sections.S3 = true;
-						objects[i].sections.S2 = false;
-						if (IntersectionDetection().lineandCircle(vLine, objects[i])) {
-							objects[i].sections.S4 = true;
-						}
-					}
-					else {
-						objects[i].sections.S2 = true;
-						objects[i].sections.S3 = false;
-						if (IntersectionDetection().lineandCircle(vLine, objects[i])) {
-							objects[i].sections.S1 = true;
-						}
-					}
-				}
-			}
-			else {
-				objects[i].sections.S1 = true;
-				objects[i].sections.S4 = true;
-				if (!IntersectionDetection().lineandCircle(hLine, objects[i])) {
-					if (objects[i].getPosition().y > hLine[0].y) {
-						objects[i].sections.S4 = true;
-						objects[i].sections.S1 = false;
-						if (IntersectionDetection().lineandCircle(vLine, objects[i])) {
-							objects[i].sections.S3 = true;
-						}
-					}
-					else {
-						objects[i].sections.S4 = false;
-						objects[i].sections.S1 = true;
-						if (IntersectionDetection().lineandCircle(vLine, objects[i])) {
-							objects[i].sections.S2 = true;
-						}
-					}
-				}
-			}
-		}
-		return objects;
-	}
+	
 
 	void setrbsCircles(std::vector<Circle> circles) {
 		for (int i = 0; i < circles.size(); i++) {

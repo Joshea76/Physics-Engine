@@ -23,6 +23,9 @@ public:
         S1, S2, S3, S4 = false;
     }
 
+    void setAllTrue() {
+        S1, S2, S3, S4 = true;
+    }
 
 };
 
@@ -31,7 +34,7 @@ private:
     sf::Vector2f position, linearVelocity, forceAccum;
     sf::Vector2f linearDamping = sf::Vector2f(0.999999f, 0.999999f);
     float rotation, angularVeclocity, angularDamping, mass, inversemass;
-    float coefficientRestitution = 0.8f;
+    float coefficientRestitution = 0.5f;
     bool fixedRotation;
 
     std::vector<ForceGenerator> localForces = {};
