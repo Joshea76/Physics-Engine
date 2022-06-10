@@ -1389,6 +1389,53 @@ public:
 		return circles;
 	}
 
+	std::vector<RigidBody> sortObjects(std::vector<RigidBody> objects) {
+		for (int i = 0; i < objects.size(); i++) {
+
+			if (objects[i].getPosition().x > vLine[0].x) {
+				objects[i].sections.S2 = true;
+				objects[i].sections.S3 = true;
+				if (!IntersectionDetection().lineandCircle(hLine, objects[i])) {
+					if (objects[i].getPosition().y > hLine[0].y) {
+						objects[i].sections.S3 = true;
+						objects[i].sections.S2 = false;
+						if (IntersectionDetection().lineandCircle(vLine, objects[i])) {
+							objects[i].sections.S4 = true;
+						}
+					}
+					else {
+						objects[i].sections.S2 = true;
+						objects[i].sections.S3 = false;
+						if (IntersectionDetection().lineandCircle(vLine, objects[i])) {
+							objects[i].sections.S1 = true;
+						}
+					}
+				}
+			}
+			else {
+				objects[i].sections.S1 = true;
+				objects[i].sections.S4 = true;
+				if (!IntersectionDetection().lineandCircle(hLine, objects[i])) {
+					if (objects[i].getPosition().y > hLine[0].y) {
+						objects[i].sections.S4 = true;
+						objects[i].sections.S1 = false;
+						if (IntersectionDetection().lineandCircle(vLine, objects[i])) {
+							objects[i].sections.S3 = true;
+						}
+					}
+					else {
+						objects[i].sections.S4 = false;
+						objects[i].sections.S1 = true;
+						if (IntersectionDetection().lineandCircle(vLine, objects[i])) {
+							objects[i].sections.S2 = true;
+						}
+					}
+				}
+			}
+		}
+		return objects;
+	}
+
 	void setrbsCircles(std::vector<Circle> circles) {
 		for (int i = 0; i < circles.size(); i++) {
 			if (circles[i].rigidbody.sections.S1) {

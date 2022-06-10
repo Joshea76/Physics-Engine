@@ -345,7 +345,8 @@ void testScreen() {
 
         
         // find Collisions
-        
+        circles = quadtree.sortCircles(circles);
+
             for (int i = 0; i < Objects.size(); ++i) {
                 if (Objects.size() > 1) {
                 for (int j = i; j < Objects.size(); ++j) {
@@ -359,16 +360,54 @@ void testScreen() {
 
 
                     //if c1 and c2 are NOT NULL  AND Not infinte Mass ->
-                    try {
-                        Circle o1 = getCircleByID(circles, Objects[i].getID());
-                        Circle o2 = getCircleByID(circles, Objects[j].getID());
-                        if (o1 != Circle() && o2 != Circle()) {
-                            //o1.rigidbody = r1;
-                            //o2.rigidbody = r2;
-                            result = Collisions().findcollisionfeatures(o1, o2);
+                    if (Objects[i].sections.S1 && Objects[j].sections.S1) {
+                        try {
+                            Circle o1 = getCircleByID(circles, Objects[i].getID());
+                            Circle o2 = getCircleByID(circles, Objects[j].getID());
+                            if (o1 != Circle() && o2 != Circle()) {
+                                //o1.rigidbody = r1;
+                                //o2.rigidbody = r2;
+                                result = Collisions().findcollisionfeatures(o1, o2);
+                            }
                         }
+                        catch (std::exception e) {}
                     }
-                    catch (std::exception e) {}
+                    if (Objects[i].sections.S2 && Objects[j].sections.S2) {
+                        try {
+                            Circle o1 = getCircleByID(circles, Objects[i].getID());
+                            Circle o2 = getCircleByID(circles, Objects[j].getID());
+                            if (o1 != Circle() && o2 != Circle()) {
+                                //o1.rigidbody = r1;
+                                //o2.rigidbody = r2;
+                                result = Collisions().findcollisionfeatures(o1, o2);
+                            }
+                        }
+                        catch (std::exception e) {}
+                    }
+                    if (Objects[i].sections.S3 && Objects[j].sections.S3) {
+                        try {
+                            Circle o1 = getCircleByID(circles, Objects[i].getID());
+                            Circle o2 = getCircleByID(circles, Objects[j].getID());
+                            if (o1 != Circle() && o2 != Circle()) {
+                                //o1.rigidbody = r1;
+                                //o2.rigidbody = r2;
+                                result = Collisions().findcollisionfeatures(o1, o2);
+                            }
+                        }
+                        catch (std::exception e) {}
+                    }
+                    if (Objects[i].sections.S4 && Objects[j].sections.S4) {
+                        try {
+                            Circle o1 = getCircleByID(circles, Objects[i].getID());
+                            Circle o2 = getCircleByID(circles, Objects[j].getID());
+                            if (o1 != Circle() && o2 != Circle()) {
+                                //o1.rigidbody = r1;
+                                //o2.rigidbody = r2;
+                                result = Collisions().findcollisionfeatures(o1, o2);
+                            }
+                        }
+                        catch (std::exception e) {}
+                    }
                     /*
                     try {
                         Rect o1 = getRectByID(rectangles, Objects[i].getID());
@@ -455,7 +494,7 @@ void testScreen() {
                 }
             }
             //std::cout << "B" << i << " " << Objects[i].getLinearVelocity().x << " , " << Objects[i].getLinearVelocity().y << "  " << Objects[i].getForceAccum().y << std::endl;
-            circles = quadtree.sortCircles(circles);
+            //circles = quadtree.sortCircles(circles);
             if (circles[i].rigidbody.sections.S1 || circles[i].rigidbody.sections.S2) { // Top wall
                 CollisionManifold wallCollide = IntersectionDetection().wallCollide(std::vector<sf::Vertex>{Bounds[0], Bounds[1]}, circles[i]);
                 if (wallCollide != CollisionManifold() && wallCollide.isColliding()) {
@@ -482,7 +521,6 @@ void testScreen() {
                     //std::cout << " Force for " << i << " : " << Objects[i].getForceAccum().x << std::endl;
                 }
             }
-            circles[i].rigidbody.sections.reset();
             /*
             CollisionManifold wallCol = IntersectionDetection().boundCollide(Bounds, circles[i]);
             if (wallCol != CollisionManifold() && wallCol.isColliding()) {
@@ -491,6 +529,7 @@ void testScreen() {
             }
             */
         }
+        
         
         
 
@@ -502,6 +541,7 @@ void testScreen() {
         }
         for (int i = 0; i < circles.size(); i++) {
             circles[i].setRigidbody(Objects[i]);
+            circles[i].rigidbody.sections.reset();
         }
         //circ1.setRigidbody(Objects[0]);
         //circ2.setRigidbody(Objects[1]);
