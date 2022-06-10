@@ -45,7 +45,9 @@ public:
     bool operator != (const RigidBody& fr) const { return !operator==(fr); }
 
 
-    RigidBody() {}                                  
+    RigidBody() {
+        this->id = 0;
+    }
     // Create Constructors
     RigidBody(sf::Vector2f position, float mass, float rotation) {
         this->position = position;
@@ -72,6 +74,7 @@ public:
 
     void setPosition(sf::Vector2f v) { position = v; }
     sf::Vector2f getPosition() { return position; }
+    void addPosition(sf::Vector2f v) { this->position = AddVectors(this->position, v); }
 
     void setRotation(float rotation) { this->rotation = rotation; }
     float getRotation() { return rotation; }

@@ -1140,14 +1140,14 @@ public:
 
 	std::tuple<RigidBody, RigidBody>  applyImpulse(RigidBody a, RigidBody b, CollisionManifold m) {
 		bool swapped = false;
-
+		
 		if (a.getPosition().x > b.getPosition().x || a.getPosition().y < b.getPosition().y) {
 			RigidBody tmp = a;
 			a = b;
 			b = tmp;
 			swapped = true;
 		}
-
+		
 		float invMass1 = a.getInverseMass();
 		float invMass2 = b.getInverseMass();
 		float invMassSum = invMass1 + invMass2;
@@ -1157,8 +1157,12 @@ public:
 
 		sf::Vector2f relativeVel = sf::Vector2f(SubtractVectors(b.getLinearVelocity(), a.getLinearVelocity()));
 		sf::Vector2f relativeNormal = sf::Vector2f(normalise(m.getNormal()));
+		
 		//Moving away from eachother do nothing
-		if (dotProduct(relativeVel, relativeNormal) > 0.f) { return std::tuple<RigidBody, RigidBody>(); }
+		if (dotProduct(relativeVel, relativeNormal) > 0.f) { 
+			return std::tuple<RigidBody, RigidBody>(); 
+		}
+		if (swapped) { relativeNormal = -relativeNormal; }
 
 		float e = std::min(a.getCor(), b.getCor());
 		sf::Vector2f DeltaVel = SubtractVectors(ScaleVector(-relativeVel, e), relativeVel);
@@ -1174,6 +1178,15 @@ public:
 		a.setLinearVelocity(sf::Vector2f(AddVectors(a.getLinearVelocity(), (ScaleVector(impulse, (invMass1))))));
 		//a.addLocalForce(ScaleVector(-impulse, 1));
 		b.setLinearVelocity(sf::Vector2f(AddVectors(b.getLinearVelocity(), (ScaleVector(impulse, (-invMass2))))));
+		if (swapped) {
+			a.addPosition(ScaleVector(-relativeNormal, (m.getDepth() / 2)));
+			b.addPosition(ScaleVector(relativeNormal, (m.getDepth() / 2)));
+		}
+		else {
+			a.addPosition(ScaleVector(relativeNormal, (m.getDepth() / 2)));
+			b.addPosition(ScaleVector(-relativeNormal, (m.getDepth() / 2)));
+		}
+
 		//b.addLocalForce(ScaleVector(impulse, 1));
 		return swapped == false ? std::tuple<RigidBody, RigidBody>(a, b) : std::tuple<RigidBody, RigidBody>(b, a);
 	}

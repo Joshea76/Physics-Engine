@@ -284,28 +284,41 @@ void testScreen() {
     Circle circ5(((objIDs.back()) + 1), sf::Vector2f(60.f, 200.f), 25.f, 0.0f, sf::Color(0.f, 125.f, 125.f));
     objIDs.push_back(objIDs.back() + 1); // create id
     circ5.rigidbody.setMass(10.f);
-    circ5.rigidbody.addLocalForce(sf::Vector2f(-200.f, 00.f));
-    circ1.rigidbody.addLocalForce(sf::Vector2f(200.f, 00.f));
+
+    Circle circ6(((objIDs.back()) + 1), sf::Vector2f(50.f, 50.f), 25.f, 0.0f, sf::Color(125.f, 0.f, 125.f));
+    objIDs.push_back(objIDs.back() + 1); // create id
+    circ6.rigidbody.setMass(10.f);
+
+    Circle circ7(((objIDs.back()) + 1), sf::Vector2f(380.f, 250.f), 25.f, 0.0f, sf::Color(200.f, 200.f, 200.f));
+    objIDs.push_back(objIDs.back() + 1); // create id
+    circ7.rigidbody.setMass(10.f);
+
+    circ5.rigidbody.addLocalForce(sf::Vector2f(-400.f, 00.f));
+    circ1.rigidbody.addLocalForce(sf::Vector2f(400.f, 00.f));
 
     
     std::vector<Circle> circles{};
     std::vector<Rect> rectangles{};
 
-    //circles.push_back(circ1);
+    circles.push_back(circ1);
     circles.push_back(circ2);
-    //circles.push_back(circ3);
+    circles.push_back(circ3);
     circles.push_back(circ4);
     circles.push_back(circ5);
+    circles.push_back(circ6);
+    circles.push_back(circ7);
 
 
 
 
     std::vector<RigidBody> Objects;
-    //Objects.push_back(circ1.rigidbody);
+    Objects.push_back(circ1.rigidbody);
     Objects.push_back(circ2.rigidbody);
-    //Objects.push_back(circ3.rigidbody);
+    Objects.push_back(circ3.rigidbody);
     Objects.push_back(circ4.rigidbody);
     Objects.push_back(circ5.rigidbody);
+    Objects.push_back(circ6.rigidbody);
+    Objects.push_back(circ7.rigidbody);
 
     physics.setRigidBodies(Objects);
 
@@ -415,7 +428,7 @@ void testScreen() {
                     //std::cout << "B1 " << Objects[i].getLinearVelocity().x << " , " << Objects[i].getLinearVelocity().y << "  " << Objects[i].getForceAccum().y << " ||  ";
                     //std::cout << "B2 " << Objects[j].getLinearVelocity().x << " , " << Objects[j].getLinearVelocity().y << "  " << Objects[j].getForceAccum().y << std::endl;
 
-                    int impulseIterations = 6;
+                    int impulseIterations = 1;
                     for (int k = 0; k < impulseIterations; k++) {
                         for (int l = 0; l < collisions.size(); l++) {
                             int jSize = collisions[l].getContactPoints().size();
@@ -423,7 +436,7 @@ void testScreen() {
                                 RigidBody r1 = bodies1[l];
                                 RigidBody r2 = bodies2[l];
                                 std::tuple<RigidBody, RigidBody> rbs = physics.applyImpulse(r1, r2, collisions[l]);
-                                if (rbs != std::tuple<RigidBody, RigidBody>()) {
+                                if (std::get<0>(rbs).getID() != 0 && std::get<1>(rbs).getID() != 0) {
                                     r1 = std::get<0>(rbs);
                                     r2 = std::get<1>(rbs);
                                     Objects[i] = r1;
