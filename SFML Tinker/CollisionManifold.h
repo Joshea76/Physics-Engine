@@ -38,7 +38,8 @@ union FeaturePair {
 	int value;
 };
 
-struct ClipVertex {
+class ClipVertex {
+public:
 	ClipVertex() { fp.value = 0; }
 	sf::Vector2f v;
 	FeaturePair fp;
@@ -621,6 +622,9 @@ public:
 				++numContacts;
 			}
 		}
+		
+		//delete[] clipPoints1;
+		//delete[] clipPoints2;
 		return CM;
 	}
 	static CollisionManifold findcollisionfeatures(Rect a, Circle b) { return CollisionManifold(); }
@@ -1141,11 +1145,11 @@ public:
 	std::tuple<RigidBody, RigidBody>  applyImpulse(RigidBody a, RigidBody b, CollisionManifold m) {
 		bool swapped = false;
 		
-		if (a.getPosition().x > b.getPosition().x || a.getPosition().y < b.getPosition().y) {
+		if ((a.getPosition().x > b.getPosition().x) || (a.getPosition().y < b.getPosition().y)) {
 			RigidBody tmp = a;
 			a = b;
 			b = tmp;
-			swapped = true;
+			swapped = true; 
 		}
 		
 		float invMass1 = a.getInverseMass();
@@ -1169,22 +1173,25 @@ public:
 		//float numerator = (-(1.0f + e) * dotProduct(relativeVel, relativeNormal));
 		//float numerator = (-(1.0f + e) * dotProduct(DeltaVel, relativeNormal));
 		//float j = numerator / invMassSum;
-		sf::Vector2f j = ScaleVector(DeltaVel, 1 / invMassSum);
+		float j = lengthofVector(DeltaVel) / invMassSum;
 		//if (m.getContactPoints().size() > 0 && j != 0.0f) {
 			//j = j / float(m.getContactPoints().size());
 		//}
 
-		sf::Vector2f impulse = sf::Vector2f(MultiplyVectors(relativeNormal, j));
-		a.setLinearVelocity(sf::Vector2f(AddVectors(a.getLinearVelocity(), (ScaleVector(impulse, (invMass1))))));
-		//a.addLocalForce(ScaleVector(-impulse, 1));
-		b.setLinearVelocity(sf::Vector2f(AddVectors(b.getLinearVelocity(), (ScaleVector(impulse, (-invMass2))))));
+		sf::Vector2f impulse = sf::Vector2f(ScaleVector(relativeNormal, j));
 		if (swapped) {
 			a.addPosition(ScaleVector(-relativeNormal, (m.getDepth() / 2)));
 			b.addPosition(ScaleVector(relativeNormal, (m.getDepth() / 2)));
+
+			a.setLinearVelocity(sf::Vector2f(AddVectors(a.getLinearVelocity(), (ScaleVector(impulse, (invMass1))))));
+			b.setLinearVelocity(sf::Vector2f(AddVectors(b.getLinearVelocity(), (ScaleVector(impulse, (-invMass2))))));
 		}
 		else {
 			a.addPosition(ScaleVector(relativeNormal, (m.getDepth() / 2)));
 			b.addPosition(ScaleVector(-relativeNormal, (m.getDepth() / 2)));
+
+			a.setLinearVelocity(sf::Vector2f(AddVectors(a.getLinearVelocity(), (ScaleVector(impulse, (-invMass1))))));
+			b.setLinearVelocity(sf::Vector2f(AddVectors(b.getLinearVelocity(), (ScaleVector(impulse, (invMass2))))));
 		}
 
 		//b.addLocalForce(ScaleVector(impulse, 1));
@@ -1307,6 +1314,28 @@ public:
 		sf::Vector2f impulse = sf::Vector2f(MultiplyVectors(relativeNormal, j));
 		//rb.addLocalForce(ScaleVector(impulse, 1));
 		rb.setLinearVelocity(sf::Vector2f(AddVectors(rb.getLinearVelocity(), (ScaleVector(impulse, (invMass))))));
+		return rb;
+	}
+	RigidBody applyImpulse(RigidBody rb, CollisionManifold m) {
+		//For collisions with bounds
+		sf::Vector2f Vel = SubtractVectors(sf::Vector2f(0.f, 0.f), rb.getLinearVelocity());
+		sf::Vector2f relativeNormal = sf::Vector2f((normalise(-m.getNormal())));
+		//if (dotProduct(Vel, abs(relativeNormal)) > 0.f) { Vel = ScaleVector(Vel, -1.f); }
+
+
+		float invMass = rb.getInverseMass();
+		float e = rb.getCor();
+		//float numerator = (-(1.f + e) * dotProduct(Vel, relativeNormal));
+		sf::Vector2f deltaVel = SubtractVectors(ScaleVector((-abs(Vel)), e), abs(Vel));
+		float j = lengthofVector(deltaVel) / invMass;
+
+
+
+		//j = numerator / (rb.getInverseMass());
+		sf::Vector2f impulse = sf::Vector2f(ScaleVector(relativeNormal, j));
+		//rb.addLocalForce(ScaleVector(impulse, 1));
+		rb.setLinearVelocity(sf::Vector2f(AddVectors(rb.getLinearVelocity(), (ScaleVector(impulse, (invMass))))));
+		rb.setPosition(AddVectors(rb.getPosition(), ScaleVector(relativeNormal, m.getDepth())));
 		return rb;
 	}
 };

@@ -265,7 +265,7 @@ void testScreen() {
     PhysicsSystem physics = PhysicsSystem(globalforces);
 
     std::vector<int> objIDs = { 0 };
-
+    /*
     Circle circ1(((objIDs.back()) + 1), sf::Vector2f(700.f, 100.f), 25.f, 0.0f, sf::Color(255.f, 0.f, 0.f));
     objIDs.push_back(objIDs.back() + 1); // create id
     circ1.rigidbody.setMass(100.f);
@@ -273,11 +273,11 @@ void testScreen() {
     Circle circ2(((objIDs.back()) + 1), sf::Vector2f(150.f, 505.f), 25.f, 0.0f, sf::Color(0.f, 0.f, 255.f));
     objIDs.push_back(objIDs.back() + 1); // create id
     circ2.rigidbody.setMass(10.f);
-    
+
     Circle circ3(((objIDs.back()) + 1), sf::Vector2f(250.f, 380.f), 25.f, 0.0f, sf::Color(0.f, 255.f, 0.f));
     objIDs.push_back(objIDs.back() + 1); // create id
     circ3.rigidbody.setMass(10.f);
-    
+
     Circle circ4(((objIDs.back()) + 1), sf::Vector2f(225.f, 200.f), 25.f, 0.0f, sf::Color(125.f, 125.f, 0.f));
     objIDs.push_back(objIDs.back() + 1); // create id
     circ4.rigidbody.setMass(10.f);
@@ -295,11 +295,43 @@ void testScreen() {
 
     circ5.rigidbody.addLocalForce(sf::Vector2f(-400.f, 00.f));
     circ1.rigidbody.addLocalForce(sf::Vector2f(400.f, 00.f));
+    */
+
+
+    std::vector<Circle> circles{};
+    std::vector<RigidBody> Objects;
+
+
+    //Shit tonne of circles
+    for (int i = 1; i < 5; i++) {
+        for (int j = 1; j < 5; j++){
+        Circle circ(((objIDs.back()) + 1), sf::Vector2f((i*101.f), (j*201.f)), 50.f, 0.0f, sf::Color(0.f, 0.f, 127.f));
+        objIDs.push_back(objIDs.back() + 1); // create id
+        circ.rigidbody.setMass(10.f);
+        circles.push_back(circ);
+        Objects.push_back(circ.rigidbody);
+        }
+    }
+
+
+    // TRIANGLE
+    sf::VertexArray triangle(sf::Triangles, 3);
+
+    // define the position of the triangle's points
+    triangle[0].position = sf::Vector2f(0.f, 500.f);
+    triangle[1].position = sf::Vector2f(0.f, 800.f);
+    triangle[2].position = sf::Vector2f(300.f, 800.f);
+
+    // define the color of the triangle's points
+    triangle[0].color = sf::Color::Red;
+    triangle[1].color = sf::Color::Blue;
+    triangle[2].color = sf::Color::Green;
+
 
     
-    std::vector<Circle> circles{};
+   
     std::vector<Rect> rectangles{};
-
+    /*
     circles.push_back(circ1);
     circles.push_back(circ2);
     circles.push_back(circ3);
@@ -307,11 +339,12 @@ void testScreen() {
     circles.push_back(circ5);
     circles.push_back(circ6);
     circles.push_back(circ7);
+    */
 
 
 
-
-    std::vector<RigidBody> Objects;
+    
+    /*
     Objects.push_back(circ1.rigidbody);
     Objects.push_back(circ2.rigidbody);
     Objects.push_back(circ3.rigidbody);
@@ -319,6 +352,7 @@ void testScreen() {
     Objects.push_back(circ5.rigidbody);
     Objects.push_back(circ6.rigidbody);
     Objects.push_back(circ7.rigidbody);
+    */
 
     physics.setRigidBodies(Objects);
 
@@ -376,58 +410,13 @@ void testScreen() {
                     }
                     catch (std::exception e) {}
                     
-                    /*
-                    try {
-                        Rect o1 = getRectByID(rectangles, Objects[i].getID());
-                        Rect o2 = getRectByID(rectangles, Objects[j].getID());
-                        result = Collisions().findcollisionfeatures(o1, o2);
-                    }
-                    catch (std::exception e) {}
-                    try {
-                        Rect o1 = getRectByID(rectangles, Objects[i].getID());
-                        Circle o2 = getCircleByID(circles, Objects[j].getID());
-                        result = Collisions().findcollisionfeatures(o1, o2);
-                    }
-                    catch (std::exception e) {}
-                    try {
-                        Circle o1 = getCircleByID(circles, Objects[i].getID());
-                        Rect o2 = getRectByID(rectangles, Objects[j].getID());
-                        result = Collisions().findcollisionfeatures(o1, o2);
-                    }
-                    catch (std::exception e) {}
-                    */
-                    /*
-                    try {
-                        Circle o1 = Objects[i].getCircleByID(circles);
-                        Circle o2 = Objects[j].getCircleByID(circles);
-                        result = Collisions().findcollisionfeatures(o1, o2);
-                    }
-                    catch(std::exception e){}
-                    try {
-                        Rect o1 = Objects[i].getRectByID(rectangles);
-                        Rect o2 = Objects[j].getRectByID(rectangles);
-                        result = Collisions().findcollisionfeatures(o1, o2);
-                    }
-                    catch (std::exception e) {}
-                    try {
-                        Rect o1 = Objects[i].getRectByID(rectangles);
-                        Circle o2 = Objects[j].getCircleByID(circles);
-                        result = Collisions().findcollisionfeatures(o1, o2);
-                    }
-                    catch (std::exception e) {}
-                    try {
-                        Circle o1 = Objects[i].getCircleByID(circles);
-                        Rect o2 = Objects[j].getRectByID(rectangles);
-                        result = Collisions().findcollisionfeatures(o1, o2);
-                    }
-                    catch (std::exception e) {}
-                    */
+                    
 
                     if (result != CollisionManifold() && result.isColliding()) {
                         bodies1.push_back(r1);
                         bodies2.push_back(r2);
                         collisions.push_back(result);
-                        std::cout << "HIT" << std::endl;
+                        //std::cout << "HIT" << std::endl;
                         
 
 
@@ -481,6 +470,10 @@ void testScreen() {
                 if (wallCollide != CollisionManifold() && wallCollide.isColliding()) {
                     Objects[i] = physics.applyImpulse(Objects[i], wallCollide, gravity.getForce(),2);
                 }
+                CollisionManifold tCollide = IntersectionDetection().wallCollide(std::vector<sf::Vertex>{triangle[0],triangle[2]}, circles[i]);
+                if (tCollide != CollisionManifold() && tCollide.isColliding()) {
+                    Objects[i] = physics.applyImpulse(Objects[i], tCollide);
+                }
             }
             if (circles[i].rigidbody.sections.S4 || circles[i].rigidbody.sections.S1) { // Left wall
                 CollisionManifold wallCollide = IntersectionDetection().wallCollide(std::vector<sf::Vertex>{Bounds[0], Bounds[3]}, circles[i]);
@@ -518,6 +511,8 @@ void testScreen() {
         // Draw
         window.clear();
         for (int i = 0; i < circles.size(); i++) { window.draw(circles[i].outputShape()); }
+
+        window.draw(triangle);
         //window.draw(circ1.outputShape());
         //window.draw(circ2.outputShape());
         //window.draw(circ3.outputShape());
@@ -540,11 +535,11 @@ void BoxesTesting() {
     //Rect(int id, sf::Vector2f position, sf::Vector2f size, float rotation, sf::Color color) {
         
 
-    Rect box1(((objIDs.back()) + 1), sf::Vector2f(210.f, 0.f), sf::Vector2f(25.f,25.f), 0.0f, sf::Color(255.f, 0.f, 0.f));
+    Rect box1(((objIDs.back()) + 1), sf::Vector2f(210.f, 0.f), sf::Vector2f(50.f, 50.f), 0.0f, sf::Color(255.f, 0.f, 0.f));
     objIDs.push_back(objIDs.back() + 1); // create id
     box1.rigidbody.setMass(1.f);
     box1.rigidbody.addLocalForce(sf::Vector2f(0.f, 1.f));
-    Rect box2(((objIDs.back()) + 1), sf::Vector2f(220.f, 100.f), sf::Vector2f(25.f, 25.f), 0.0f, sf::Color(0.f, 0.f, 255.f));
+    Rect box2(((objIDs.back()) + 1), sf::Vector2f(220.f, 100.f), sf::Vector2f(50.f, 50.f), 0.0f, sf::Color(0.f, 0.f, 255.f));
     objIDs.push_back(objIDs.back() + 1); // create id
     box2.rigidbody.setMass(1.f);
 
@@ -633,12 +628,41 @@ void BoxesTesting() {
     }
 }
 
+void Balls() {
+    sf::RenderWindow window(sf::VideoMode(800.f,800.f), "Window");
+
+    sf::VertexArray triangle(sf::Triangles, 3);
+
+    // define the position of the triangle's points
+    triangle[0].position = sf::Vector2f(10.f, 10.f);
+    triangle[1].position = sf::Vector2f(100.f, 10.f);
+    triangle[2].position = sf::Vector2f(100.f, 100.f);
+
+    // define the color of the triangle's points
+    triangle[0].color = sf::Color::Red;
+    triangle[1].color = sf::Color::Blue;
+    triangle[2].color = sf::Color::Green;
+
+    while (window.isOpen()) {
+        sf::Event evnt;
+        while (window.pollEvent(evnt)) {
+            if (evnt.type == sf::Event::Closed) {
+                window.close();
+            }
+        }
+        window.clear();
+        window.draw(triangle);
+        window.display();
+    }
+}
+
 int main() {
     //movingBox();
     //Click();
     //ClickClass();
     //CollisionTesting();
-    //testScreen();
-    BoxesTesting();
+    testScreen();
+    //BoxesTesting();
+    //Balls();
     return 0;
 }
