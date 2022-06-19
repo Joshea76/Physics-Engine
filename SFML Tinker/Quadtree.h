@@ -27,11 +27,13 @@ private:
 	sf::Vector2f topLeft;
 	sf::Vector2f btmRight;
 
-	//Details of Node
-	Node* n;
 
 
 public:
+
+
+	//Details of Node
+	Node* n;
 
 	//Children of Tree
 	Quad* topLeftTree;

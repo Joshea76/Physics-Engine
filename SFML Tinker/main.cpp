@@ -242,24 +242,6 @@ void testScreen() {
 
 
 
-    //PhysicsSystem physics = PhysicsSystem(1.0f / 60.f, sf::Vector2f(0.f, -10.f));
-    //Transform obj1, obj2;
-    //RigidBody rb1, rb2;
-
-    /*Gabes Shit
-    obj1 = Transform(sf::Vector2f(100.f, 300.f));
-    obj2 = Transform(sf::Vector2f(200.f, 300.f));
-    rb1 = RigidBody();
-    rb2 = RigidBody();
-    rb1.setRawTransform(obj1);
-    rb2.setRawTransform(obj2);
-    rb1.setMass(100.f);
-    rb2.setMass(200.f);
-
-    physics.addRigidbody(rb1);
-    physics.addRigidbody(rb2);
-    */
-
 
     ForceGenerator gravity = ForceGenerator(sf::Vector2f(0.f, 1.95f));
     std::vector<ForceGenerator> globalforces = { gravity };
@@ -368,6 +350,7 @@ void testScreen() {
     std::vector<RigidBody> bodies1 = {};
     std::vector<RigidBody> bodies2 = {};
     
+    std::vector<Circle> circleCols = {};
     
     //UI
     //sf::Sprite sprite = sf::Sprite(sf::Texture());
@@ -385,17 +368,62 @@ void testScreen() {
         bodies2.clear();
         collisions.clear();
 
-        
+
+        Quad root = Quad(sf::Vector2f(0, 0), sf::Vector2f(bounds[0], bounds[1]));
+
+
+        CollisionManifold result = CollisionManifold();
+
+        for (int i = 0; i < circles.size(); i++) {
+            root.insert(circles[i].rigidbody.getNode());
+        }
+        std::list<Quad*>* quads = new std::list<Quad*>();
+        quads = root.getLowestQuads(&root, quads);
+
+        std::list<Quad*>::iterator it;
+        for (int i = 0; i < quads->size(); i++) {
+            for (it = quads->begin(); it != quads->end(); ++it) {
+                if (it._Ptr->_Myval->topLeftTree != NULL) {
+                    circleCols.push_back(getCircleByID(circles, it._Ptr->_Myval->n->id));
+                }
+                if (it._Ptr->_Myval->topRightTree != NULL) {
+                    circleCols.push_back(getCircleByID(circles, it._Ptr->_Myval->n->id));
+                }
+                if (it._Ptr->_Myval->btmLeftTree != NULL) {
+                    circleCols.push_back(getCircleByID(circles, it._Ptr->_Myval->n->id));
+                }
+                if (it._Ptr->_Myval->btmRightTree != NULL) {
+                    circleCols.push_back(getCircleByID(circles, it._Ptr->_Myval->n->id));
+                }
+            }
+            if (circleCols.size() >= 2) {
+                for (int c1 = 0; c1 < circleCols.size(); c1++) {
+                    for (int c2 = 0; c2 < circleCols.size(); c2++) {
+                        if (c1 != c2) {
+                            result = Collisions().findcollisionfeatures(circleCols[c1], circleCols[c2]);
+                            if (result != CollisionManifold() && result.isColliding()) {
+                                bodies1.push_back(circleCols[c1].rigidbody);
+                                bodies2.push_back(circleCols[c2].rigidbody);
+                                collisions.push_back(result);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
         // find Collisions
         //circles = quadtree.sortCircles(circles);
 
             for (int i = 0; i < Objects.size(); ++i) {
+                /*
                 if (Objects.size() > 1) {
                 for (int j = i; j < Objects.size(); ++j) {
                     if (i == j) { continue; }
 
 
-
+                    /*
                     CollisionManifold result = CollisionManifold();
                     RigidBody r1 = Objects[i];
                     RigidBody r2 = Objects[j];
@@ -427,6 +455,7 @@ void testScreen() {
                     }
                     //std::cout << "B1 " << Objects[i].getLinearVelocity().x << " , " << Objects[i].getLinearVelocity().y << "  " << Objects[i].getForceAccum().y << " ||  ";
                     //std::cout << "B2 " << Objects[j].getLinearVelocity().x << " , " << Objects[j].getLinearVelocity().y << "  " << Objects[j].getForceAccum().y << std::endl;
+                    */
 
                     int impulseIterations = 1;
                     for (int k = 0; k < impulseIterations; k++) {
@@ -708,9 +737,9 @@ int main() {
     //Click();
     //ClickClass();
     //CollisionTesting();
-    //testScreen();
+    testScreen();
     //BoxesTesting();
     //Balls();
-    treeTesting();
+    //treeTesting();
     return 0;
 }
