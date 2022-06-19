@@ -216,6 +216,7 @@
     <ClInclude Include="Functions.h" />
     <ClInclude Include="PhaseCollision.h" />
     <ClInclude Include="PhysicsSystem.h" />
+    <ClInclude Include="Quadtree.h" />
     <ClInclude Include="Raycast.h" />
     <ClInclude Include="RectCollide.h" />
     <ClInclude Include="Shapes.h" />

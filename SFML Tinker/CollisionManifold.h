@@ -1340,7 +1340,7 @@ public:
 	}
 };
 
-
+/*
 class Quadtree {
 public:
 	std::vector<sf::Vertex> bounds;
@@ -1459,7 +1459,7 @@ public:
 					}
 				}
 			}
-			*/
+			
 		}
 		return circles;
 	}
@@ -1507,6 +1507,7 @@ public:
 			}
 		}
 	}
-	*/
+	
 
 };
+*/

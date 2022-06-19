@@ -7,6 +7,7 @@
 
 #include "Functions.h"
 #include "ForceGenerator.h"
+#include "Quadtree.h"
 
 class Section
 {
@@ -29,6 +30,28 @@ public:
 
 };
 
+class Simple {
+public:
+    sf::Vector2f topLeft, btmRight;
+    int id;
+
+    Simple(int id) {
+        this->id = id;
+        this->topLeft = sf::Vector2f(0.f, 0.f);
+        this->btmRight = sf::Vector2f(0.f, 0.f);
+    }
+    Simple(sf::Vector2f tl, sf::Vector2f br, int id) {
+        this->id = id;
+        this->topLeft = tl;
+        this->btmRight = br;
+    }
+    void setPoints(sf::Vector2f tl, sf::Vector2f br) {
+        this->topLeft = tl;
+        this->btmRight = br;
+    }
+};
+
+
 class RigidBody {
 private:
     sf::Vector2f position, linearVelocity, forceAccum;
@@ -43,6 +66,7 @@ private:
 
 public:
     Section sections;
+    Node* node = new Node;
     int id;
     bool operator == (const RigidBody& fr) const { return (this->id == fr.id); }
     bool operator != (const RigidBody& fr) const { return !operator==(fr); }
@@ -50,26 +74,31 @@ public:
 
     RigidBody() {
         this->id = 0;
+        node->id = this->id;
     }
     // Create Constructors
     RigidBody(sf::Vector2f position, float mass, float rotation) {
         this->position = position;
+        this->node->pos = position;
         this->mass = mass;
         this->rotation = rotation;
         sections.reset();
     }
     RigidBody(sf::Vector2f position, float mass){
         this->position = position;
+        this->node->pos = position;
         this->mass = mass;
         sections.reset();
     }
     RigidBody(sf::Vector2f position) {
         this->position = position;
+        this->node->pos = position;
         sections.reset();
     }
 
     void setID(int id) {
         this->id = id;
+        this->node->id = id;
     }
     int getID() {
         return this->id;
@@ -152,6 +181,10 @@ public:
     void setForceAccumYZero() { this->forceAccum.y = 0; }
     void setForceAccumXZero() { this->forceAccum.x = 0; }
 
+    Node* getNode() {
+        this->node->pos = this->position;
+        return node;
+    }
 };
 
 class Circle {
@@ -161,10 +194,10 @@ private:
     float mass, radius;
     bool pickedUp = false;
     int id;
-
 public:
 
     RigidBody rigidbody;
+    Simple point = Simple(id);
 
     bool operator == (const RigidBody& fr) const { return (this->id == fr.id); }
     bool operator != (const RigidBody& fr) const { return !operator==(fr); }
@@ -173,6 +206,7 @@ public:
 
     Circle() {
         this->id = 0;
+        self.setOrigin(sf::Vector2f(0, 0));
     }
 
     Circle(int id, sf::Vector2f position, float radius, float rotation, sf::Color color) {
@@ -190,6 +224,7 @@ public:
         this->self.setRotation(rotation);
 
         this->self.setFillColor(color);
+
     }
     Circle(int id, sf::Vector2f position, float radius, float rotation) {
         this->id = id;
@@ -197,12 +232,14 @@ public:
 
         this->rigidbody.setPosition(position);
         this->self.setPosition(position);
+        this->self.setOrigin(radius, radius);
 
         this->radius = radius;
         this->self.setRadius(radius);
 
         this->rigidbody.setRotation(rotation);
         this->self.setRotation(rotation);
+
     }
     Circle(int id, sf::Vector2f position, float radius) {
         this->id = id;
@@ -213,9 +250,11 @@ public:
 
         this->radius = radius;
         this->self.setRadius(radius);
+        this->self.setOrigin(radius, radius);
 
         this->rigidbody.setRotation(0);
         this->self.setRotation(0);
+
     }
     Circle(int id, sf::Vector2f position, float radius, sf::Color color) {
         this->id = id;
@@ -226,11 +265,13 @@ public:
 
         this->radius = radius;
         this->self.setRadius(radius);
+        this->self.setOrigin(radius, radius);
         
         this->rigidbody.setRotation(0);
         this->self.setRotation(0);
 
         this->self.setFillColor(color);
+
     }
 
     void setRigidbodyToSelf(RigidBody rb) {
@@ -295,6 +336,15 @@ public:
         self.setRotation(rigidbody.getRotation());
         return self; 
     }
+
+    Simple getSimple() {
+        sf::Vector2f pos = this->rigidbody.getPosition();
+        sf::Vector2f tl = AddToVector(pos, this->radius);
+        sf::Vector2f br = AddToVector(pos, this->radius * -1.f);
+        this->point.setPoints(tl, br);
+        return this->point;
+    }
+
 };
 
 

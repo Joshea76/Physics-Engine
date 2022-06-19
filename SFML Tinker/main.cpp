@@ -12,6 +12,7 @@
 //
 #include "CollisionManifold.h"
 #include "PhaseCollision.h"
+//#include "Quadtree.h"
 //#include "Shapes.h"
 //#include "Functions.h"
 //#include "PhysicsSystem.h"
@@ -233,7 +234,7 @@ void testScreen() {
     Bounds.push_back(sf::Vertex(sf::Vector2f(800.f, 800.f))); //bottom right
     Bounds.push_back(sf::Vertex(sf::Vector2f(0.f, 800.f)));   //bottom left
 
-    Quadtree quadtree = Quadtree(Bounds);
+    //Quadtree quadtree = Quadtree(Bounds);
 
     float dt = 0.16;
 
@@ -260,7 +261,7 @@ void testScreen() {
     */
 
 
-    ForceGenerator gravity = ForceGenerator(sf::Vector2f(0.f, 0.95f));
+    ForceGenerator gravity = ForceGenerator(sf::Vector2f(0.f, 1.95f));
     std::vector<ForceGenerator> globalforces = { gravity };
     PhysicsSystem physics = PhysicsSystem(globalforces);
 
@@ -305,9 +306,16 @@ void testScreen() {
     //Shit tonne of circles
     for (int i = 1; i < 5; i++) {
         for (int j = 1; j < 5; j++){
-        Circle circ(((objIDs.back()) + 1), sf::Vector2f((i*101.f), (j*201.f)), 50.f, 0.0f, sf::Color(0.f, 0.f, 127.f));
+        Circle circ(((objIDs.back()) + 1), sf::Vector2f((i*101.f) + 150.f, (j*201.f)), 35.f, 0.0f, sf::Color(0.f, 0.f, 255.f));
         objIDs.push_back(objIDs.back() + 1); // create id
         circ.rigidbody.setMass(10.f);
+        if (i % 2 == 0) {
+            circ.rigidbody.addLocalForce(sf::Vector2f(i * 200.f, -i * 100.f));
+        }
+        else {
+            circ.rigidbody.addLocalForce(sf::Vector2f(-i * 100.f, i * 200.f));
+
+        }
         circles.push_back(circ);
         Objects.push_back(circ.rigidbody);
         }
@@ -324,8 +332,8 @@ void testScreen() {
 
     // define the color of the triangle's points
     triangle[0].color = sf::Color::Red;
-    triangle[1].color = sf::Color::Blue;
-    triangle[2].color = sf::Color::Green;
+    triangle[1].color = sf::Color::Green;
+    triangle[2].color = sf::Color::Red;
 
 
     
@@ -379,7 +387,7 @@ void testScreen() {
 
         
         // find Collisions
-        circles = quadtree.sortCircles(circles);
+        //circles = quadtree.sortCircles(circles);
 
             for (int i = 0; i < Objects.size(); ++i) {
                 if (Objects.size() > 1) {
@@ -398,14 +406,10 @@ void testScreen() {
                         Circle o1 = getCircleByID(circles, Objects[i].getID());
                         Circle o2 = getCircleByID(circles, Objects[j].getID());
                         if (o1 != Circle() && o2 != Circle()) {
-                            if ((o1.rigidbody.sections.S1 && o2.rigidbody.sections.S1) ||
-                                (o1.rigidbody.sections.S2 && o2.rigidbody.sections.S2) ||
-                                (o1.rigidbody.sections.S3 && o2.rigidbody.sections.S3) ||
-                                (o1.rigidbody.sections.S4 && o2.rigidbody.sections.S4)) {
                                 //o1.rigidbody = r1;
                                 //o2.rigidbody = r2;
                                 result = Collisions().findcollisionfeatures(o1, o2);
-                            }
+                            
                         }
                     }
                     catch (std::exception e) {}
@@ -656,13 +660,57 @@ void Balls() {
     }
 }
 
+void treeTesting() {
+    sf::RenderWindow window(sf::VideoMode(800, 800), "Window");
+
+    PhysicsSystem physics = PhysicsSystem();
+
+    std::vector<int> objIDs = { 0 };
+
+    std::vector<Circle> circles{};
+
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            Circle circ(((objIDs.back()) + 1), sf::Vector2f((i * 200.f) + 100.f, (j * 200.f) + 100.f), 35.f, 0.0f, sf::Color(0.f, 0.f, 255.f));
+            objIDs.push_back(objIDs.back() + 1); // create id
+            circ.rigidbody.setMass(10.f);
+            circles.push_back(circ);
+        }
+    }
+
+
+    Quad root = Quad(sf::Vector2f(0,0),sf::Vector2f(800,800));
+
+
+    while (window.isOpen()) {
+        sf::Event evnt;
+        while (window.pollEvent(evnt)) {
+            if (evnt.type == sf::Event::Closed) {
+                window.close();
+            }
+        }
+        window.clear();
+        for (int i = 0; i < circles.size(); i++) {
+            Node* n = circles[i].rigidbody.getNode();
+            n->pos = circles[i].rigidbody.getPosition();
+            root.insert(n);
+            window.draw(circles[i].outputShape());
+
+        }
+        std::list<Quad*>* quads = new std::list<Quad*>();
+        quads = root.getLowestQuads(&root, quads);
+        window.display();
+    }
+}
+
 int main() {
     //movingBox();
     //Click();
     //ClickClass();
     //CollisionTesting();
-    testScreen();
+    //testScreen();
     //BoxesTesting();
     //Balls();
+    treeTesting();
     return 0;
 }

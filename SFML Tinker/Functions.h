@@ -23,6 +23,9 @@ sf::Vector2f MultiplyVectors(sf::Vector2f a, sf::Vector2f b) {
 sf::Vector2f ScaleVector(sf::Vector2f v, float s) {
     return sf::Vector2f((v.x * s), (v.y * s));
 }
+sf::Vector2f AddToVector(sf::Vector2f v, float a) {
+    return sf::Vector2f(v.x + a, v.y + a);
+}
 
 sf::Vector2f resultForce(sf::Vector2f V1, sf::Vector2f V2) {
 	return sf::Vector2f(V1.x + V2.x, V1.y + V2.y);
