@@ -335,8 +335,20 @@ void testScreen() {
     triangle[1].color = sf::Color::Green;
     triangle[2].color = sf::Color::Red;
 
+    /*
+    // TRIANGLE
+    sf::VertexArray triangle2(sf::Triangles, 3);
 
-    
+    // define the position of the triangle2's points
+    triangle2[0].position = sf::Vector2f(800.f, 500.f);
+    triangle2[1].position = sf::Vector2f(800.f, 800.f);
+    triangle2[2].position = sf::Vector2f(500.f, 800.f);
+
+    // define the color of the triangle2's points
+    triangle2[0].color = sf::Color::Red;
+    triangle2[1].color = sf::Color::Green;
+    triangle2[2].color = sf::Color::Red;
+    */
    
     std::vector<Rect> rectangles{};
     /*
@@ -348,10 +360,6 @@ void testScreen() {
     circles.push_back(circ6);
     circles.push_back(circ7);
     */
-
-
-
-    
     /*
     Objects.push_back(circ1.rigidbody);
     Objects.push_back(circ2.rigidbody);
@@ -384,78 +392,70 @@ void testScreen() {
         bodies1.clear();
         bodies2.clear();
         collisions.clear();
+        circleCols.clear();
+
+
+        Quad root = Quad(sf::Vector2f(0, 0), sf::Vector2f(bounds[0], bounds[1]));
+
+
+        CollisionManifold result = CollisionManifold();
+
+        for (int i = 0; i < circles.size(); i++) {
+            Node* n = circles[i].rigidbody.getNode();
+            root.insert(n);
+        }
+        std::vector<Quad*> quads = {};
+        root.getLowestQuads(&root, &quads);
+
+        std::vector<Quad*>::iterator it;
+        for (int i = 0; i < quads.size(); i++) {
+
+            Sorter sorter = Sorter();
+            sorter.sort(quads[i], circles);
+            circleCols = sorter.circleCols;
+
+
+            if (circleCols.size() >= 2) {
+                for (int c1 = 0; c1 < circleCols.size(); c1++) {
+                    for (int c2 = 0; c2 < circleCols.size(); c2++) {
+                        if (c1 != c2) {
+                            result = Collisions().findcollisionfeatures(circleCols[c1], circleCols[c2]);
+                            if (result != CollisionManifold() && result.isColliding()) {
+                                bodies1.push_back(circleCols[c1].rigidbody);
+                                bodies2.push_back(circleCols[c2].rigidbody);
+                                collisions.push_back(result);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        int impulseIterations = 1;
+        for (int k = 0; k < impulseIterations; k++) {
+            for (int l = 0; l < collisions.size(); l++) {
+                int jSize = collisions[l].getContactPoints().size();
+                for (int h = 0; h < jSize; h++) {
+                    RigidBody r1 = bodies1[l];
+                    RigidBody r2 = bodies2[l];
+                    std::tuple<RigidBody, RigidBody> rbs = physics.applyImpulse(r1, r2, collisions[l]);
+                    if (std::get<0>(rbs).getID() != 0 && std::get<1>(rbs).getID() != 0) {
+                        r1 = std::get<0>(rbs);
+                        r2 = std::get<1>(rbs);
+                        Objects[getRBPositionbyID(Objects, r1.id)] = r1;
+                        Objects[getRBPositionbyID(Objects, r2.id)] = r2;
+                    }
+                    //reassign rigidbodies post impulse
+                }
+            }
+        }
 
         
         // find Collisions
         //circles = quadtree.sortCircles(circles);
 
             for (int i = 0; i < Objects.size(); ++i) {
-                if (Objects.size() > 1) {
-                for (int j = i; j < Objects.size(); ++j) {
-                    if (i == j) { continue; }
-
-
-
-                    CollisionManifold result = CollisionManifold();
-                    RigidBody r1 = Objects[i];
-                    RigidBody r2 = Objects[j];
-
-
-                    //if c1 and c2 are NOT NULL  AND Not infinte Mass ->
-                    try {
-                        Circle o1 = getCircleByID(circles, Objects[i].getID());
-                        Circle o2 = getCircleByID(circles, Objects[j].getID());
-                        if (o1 != Circle() && o2 != Circle()) {
-                                //o1.rigidbody = r1;
-                                //o2.rigidbody = r2;
-                                result = Collisions().findcollisionfeatures(o1, o2);
-                            
-                        }
-                    }
-                    catch (std::exception e) {}
-                    
-                    
-
-                    if (result != CollisionManifold() && result.isColliding()) {
-                        bodies1.push_back(r1);
-                        bodies2.push_back(r2);
-                        collisions.push_back(result);
-                        //std::cout << "HIT" << std::endl;
-                        
-
-
-                    }
-                    //std::cout << "B1 " << Objects[i].getLinearVelocity().x << " , " << Objects[i].getLinearVelocity().y << "  " << Objects[i].getForceAccum().y << " ||  ";
-                    //std::cout << "B2 " << Objects[j].getLinearVelocity().x << " , " << Objects[j].getLinearVelocity().y << "  " << Objects[j].getForceAccum().y << std::endl;
-
-                    int impulseIterations = 1;
-                    for (int k = 0; k < impulseIterations; k++) {
-                        for (int l = 0; l < collisions.size(); l++) {
-                            int jSize = collisions[l].getContactPoints().size();
-                            for (int h = 0; h < jSize; h++) {
-                                RigidBody r1 = bodies1[l];
-                                RigidBody r2 = bodies2[l];
-                                std::tuple<RigidBody, RigidBody> rbs = physics.applyImpulse(r1, r2, collisions[l]);
-                                if (std::get<0>(rbs).getID() != 0 && std::get<1>(rbs).getID() != 0) {
-                                    r1 = std::get<0>(rbs);
-                                    r2 = std::get<1>(rbs);
-                                    Objects[i] = r1;
-                                    Objects[j] = r2;
-                                }
-                                //reassign rigidbodies post impulse
-                            }
-                        }
-                    }
-
-                    bodies1.clear();
-                    bodies2.clear();
-                    collisions.clear();
-
-
-                }
-            }
-            //std::cout << "B" << i << " " << Objects[i].getLinearVelocity().x << " , " << Objects[i].getLinearVelocity().y << "  " << Objects[i].getForceAccum().y << std::endl;
-            //circles = quadtree.sortCircles(circles);
+                
             if (circles[i].rigidbody.sections.S1 || circles[i].rigidbody.sections.S2) { // Top wall
                 CollisionManifold wallCollide = IntersectionDetection().wallCollide(std::vector<sf::Vertex>{Bounds[0], Bounds[1]}, circles[i]);
                 if (wallCollide != CollisionManifold() && wallCollide.isColliding()) {
@@ -485,14 +485,13 @@ void testScreen() {
                     Objects[i] = physics.applyImpulse(Objects[i], wallCollide, gravity.getForce(),3);
                     //std::cout << " Force for " << i << " : " << Objects[i].getForceAccum().x << std::endl;
                 }
+                /*
+                CollisionManifold tCollide = IntersectionDetection().wallCollide(std::vector<sf::Vertex>{triangle2[0], triangle2[2]}, circles[i]);
+                if (tCollide != CollisionManifold() && tCollide.isColliding()) {
+                    Objects[i] = physics.applyImpulse(Objects[i], tCollide);
+                }
+                */
             }
-            /*
-            CollisionManifold wallCol = IntersectionDetection().boundCollide(Bounds, circles[i]);
-            if (wallCol != CollisionManifold() && wallCol.isColliding()) {
-                Objects[i] = physics.applyImpulse(Objects[i], wallCol, gravity.getForce());
-                std::cout << "Force: " << i << Objects[i].getLinearVelocity().x << ", " << Objects[i].getLinearVelocity().y << std::endl;
-            }
-            */
         }
         
         
@@ -508,126 +507,13 @@ void testScreen() {
             circles[i].setRigidbody(Objects[i]);
             circles[i].rigidbody.sections.reset();
         }
-        //circ1.setRigidbody(Objects[0]);
-        //circ2.setRigidbody(Objects[1]);
-        //circ3.setRigidbody(Objects[2]);
         
         // Draw
         window.clear();
         for (int i = 0; i < circles.size(); i++) { window.draw(circles[i].outputShape()); }
 
         window.draw(triangle);
-        //window.draw(circ1.outputShape());
-        //window.draw(circ2.outputShape());
-        //window.draw(circ3.outputShape());
-        window.display();
-    }
-}
-
-void BoxesTesting() {
-    int bounds[] = { 800,800 };
-    float dt = 0.16;
-
-    sf::RenderWindow window(sf::VideoMode(bounds[0], bounds[1]), "Window");
-
-    ForceGenerator gravity = ForceGenerator(sf::Vector2f(0.f, 0.f));
-    std::vector<ForceGenerator> globalforces = { gravity };
-    PhysicsSystem physics = PhysicsSystem(globalforces);
-
-    std::vector<int> objIDs = { 0 };
-
-    //Rect(int id, sf::Vector2f position, sf::Vector2f size, float rotation, sf::Color color) {
-        
-
-    Rect box1(((objIDs.back()) + 1), sf::Vector2f(210.f, 0.f), sf::Vector2f(50.f, 50.f), 0.0f, sf::Color(255.f, 0.f, 0.f));
-    objIDs.push_back(objIDs.back() + 1); // create id
-    box1.rigidbody.setMass(1.f);
-    box1.rigidbody.addLocalForce(sf::Vector2f(0.f, 1.f));
-    Rect box2(((objIDs.back()) + 1), sf::Vector2f(220.f, 100.f), sf::Vector2f(50.f, 50.f), 0.0f, sf::Color(0.f, 0.f, 255.f));
-    objIDs.push_back(objIDs.back() + 1); // create id
-    box2.rigidbody.setMass(1.f);
-
-    std::vector<Rect> rectangles{};
-    rectangles.push_back(box1);
-    rectangles.push_back(box2);
-#
-
-    std::vector<RigidBody> Objects;
-    Objects.push_back(box1.rigidbody);
-    Objects.push_back(box2.rigidbody);
-
-
-    physics.setRigidBodies(Objects);
-
-    std::vector<CollisionManifold> collisions = {};
-    std::vector<RigidBody> bodies1 = {};
-    std::vector<RigidBody> bodies2 = {};
-
-    while (window.isOpen()) {
-        sf::Event evnt;
-        while (window.pollEvent(evnt)) {
-            if (evnt.type == sf::Event::Closed) {
-                window.close();
-            }
-        }
-
-        for (int i = 0; i < Objects.size(); ++i) {
-            for (int j = i; j < Objects.size(); ++j) {
-                if (i == j) { continue; }
-
-                CollisionManifold result = CollisionManifold();
-                RigidBody r1 = Objects[i];
-                RigidBody r2 = Objects[j];
-
-                try {
-                    Rect o1 = getRectByID(rectangles, Objects[i].getID());
-                    Rect o2 = getRectByID(rectangles, Objects[j].getID());
-                    result = Collisions().findcollisionfeatures(o1, o2);
-                }
-                catch (std::exception e) {}
-
-
-                if (result != CollisionManifold() && result.isColliding()) {
-                    bodies1.push_back(r1);
-                    bodies2.push_back(r2);
-                    collisions.push_back(result);
-                    std::cout << "HIT" << std::endl;
-                }
-
-                int impulseIterations = 6;
-                for (int k = 0; k < impulseIterations; k++) {
-                    for (int l = 0; l < collisions.size(); l++) {
-                        int jSize = collisions[l].getContactPoints().size();
-                        for (int h = 0; h < jSize; h++) {
-                            RigidBody r1 = bodies1[l];
-                            RigidBody r2 = bodies2[l];
-                            std::tuple<RigidBody, RigidBody> rbs = physics.applyImpulse(r1, r2, collisions[l]);
-                            if (rbs != std::tuple<RigidBody, RigidBody>()) {
-                                r1 = std::get<0>(rbs);
-                                r2 = std::get<1>(rbs);
-                                Objects[i] = r1;
-                                Objects[j] = r2;
-                            }
-                            //reassign rigidbodies post impulse
-                        }
-                    }
-                }
-                bodies1.clear();
-                bodies2.clear();
-                collisions.clear();
-            }
-
-
-        }
-
-        physics.setRigidBodies(Objects);
-        Objects = physics.applyForces(dt);
-        for (int i = 0; i < rectangles.size(); i++) {
-            rectangles[i].setRigidbody(Objects[i]);
-        }
-
-        window.clear();
-        for (int i = 0; i < rectangles.size(); i++) { window.draw(rectangles[i].outputShape()); }
+        //window.draw(triangle2);
         window.display();
     }
 }
