@@ -509,6 +509,14 @@ Circle getCircleByID(std::vector<Circle> circles, int rbID) {
     }
 }
 
+int getRBPositionbyID(std::vector<RigidBody> rbs, int rbID) {
+    for (int i = 0; i < rbs.size(); i++) {
+        if (rbs[i].id == rbID) {
+            return i;
+        }
+    }
+}
+
 Rect getRectByID(std::vector<Rect> circles, int rbID) {
     for (Rect c : circles) {
         if (c.getID() == rbID) {
@@ -517,3 +525,51 @@ Rect getRectByID(std::vector<Rect> circles, int rbID) {
     }
 }
 
+
+class Sorter {
+public:
+    std::vector<Circle> circleCols;
+
+    Sorter() {
+        circleCols = {};
+    }
+    Sorter(std::vector<Circle> c) {
+        circleCols = c;
+    }
+
+    void sort(Quad* q, std::vector<Circle> circles) {
+
+        if (q->topLeftTree != NULL) {
+            if (q->topLeftTree->n->id != -842150451) {
+                circleCols.push_back(getCircleByID(circles, q->topLeftTree->n->id));
+            }
+            else {
+                sort(q->topLeftTree, circles);
+            }
+        }
+        if (q->topRightTree != NULL) {
+            if (q->topRightTree->n->id != -842150451) {
+                circleCols.push_back(getCircleByID(circles, q->topRightTree->n->id));
+            }
+            else {
+                sort(q->topRightTree, circles);
+            }
+        }
+        if (q->btmLeftTree != NULL) {
+            if (q->btmLeftTree->n->id != -842150451) {
+                circleCols.push_back(getCircleByID(circles, q->btmLeftTree->n->id));
+            }
+            else {
+                sort(q->btmLeftTree, circles);
+            }
+        }
+        if (q->btmRightTree != NULL) {
+            if (q->btmRightTree->n->id != -842150451) {
+                circleCols.push_back(getCircleByID(circles, q->btmRightTree->n->id));
+            }
+            else {
+                sort(q->btmRightTree, circles);
+            }
+        }
+    }
+};

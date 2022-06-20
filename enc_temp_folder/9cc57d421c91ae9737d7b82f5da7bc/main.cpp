@@ -21,6 +21,211 @@
 
 
 
+
+/*
+bool collide(Circle obj1, Circle obj2) {
+    sf::Vector2f joiner = sf::Vector2f((obj2.Position.x - obj1.Position.x), (obj2.Position.y - obj1.Position.y));
+    if (lengthofVector(joiner) < (2*(obj1.Radius * obj1.Radius)) + (2*(obj2.Radius* obj2.Radius))) {
+        std::cout << "HIT" << std::endl;
+        return true;
+    }
+    else { return false; }
+}
+
+
+int wallCollide(Circle obj, int bounds[]) {
+    if (obj.Position.x >= bounds[0] - (obj.Radius)) {
+        return 1;
+    }
+    if (obj.Position.x <= 0 + (obj.Radius)) {
+        return 1;
+    }
+    if (obj.Position.y >= bounds[1] - (obj.Radius)) {
+        return 2;
+    }
+    if (obj.Position.y <= 0 + (obj.Radius)) {
+        return 2;
+    }
+}
+
+
+bool doNotIntersect(Circle obj1, Circle obj2){
+    if (int(obj1.Position.x) == int(obj2.Position.x) && int(obj1.Position.y) == int(obj2.Position.y)) {
+        std::cout << "Balls" << std::endl;
+        return true;
+    }
+    else { return false; }
+}
+
+int ClickClass() {
+    int bounds[] = { 800,800 };
+    float dampner = 0.5;
+
+    sf::RenderWindow window(sf::VideoMode(bounds[0], bounds[1]), "Window");
+    sf::Vector2f vec(25.f, 25.f);
+    sf::Color col(255, 0, 0);
+
+    Circle shape;
+    shape.setSize(vec);
+    shape.setPosition(sf::Vector2f(50.f, 50.f));
+    shape.setVelx(1.f);
+    shape.setColor(col);
+
+    Circle box;
+    box.setSize(vec);
+    box.setPosition(sf::Vector2f(150.f, 150.f));
+    box.setColor(sf::Color(0, 255, 0));
+    box.setVelocity(sf::Vector2f(1.f,1.f));
+
+    Circle sqaure;
+    sqaure.setSize(vec);
+    sqaure.setPosition(sf::Vector2f(100.f, 50.f));
+    sqaure.setVelx(-1.f);
+    sqaure.setColor(sf::Color(0, 0, 255));
+
+    sf::Vector2i mousepos(0, 0);
+
+    bool mouse_selection = false;
+
+    //v = u+at;
+float t = 0.07;
+float g = 9.8f;
+bool pickable = false;
+
+//Setup For ALL Variables /// 
+Circle Objects[] = { shape,box,sqaure };
+for (int i = 0; i < (sizeof(Objects) / sizeof(*Objects)); ++i) {
+    Objects[i].setAccY((g * (t * t)) / 2);
+    Objects[i].setMass(i + 1);
+    //Objects[i].setVelx(i + 1);
+    Objects[i].setDamping(sf::Vector2f(0.995, 0.995));
+}
+
+while (window.isOpen()) {
+    Sleep(10);
+    sf::Event evnt;
+    while (window.pollEvent(evnt)) {
+        if (evnt.type == sf::Event::Closed) {
+            window.close();
+        }
+        if (evnt.type == (sf::Event::KeyPressed)) {
+            float angle;
+            std::cin >> angle;
+            Objects[2].applyForce(angle, 50);
+        }
+    }
+    mousepos = sf::Mouse::getPosition(window);
+    for (int i = 0; i < (sizeof(Objects) / sizeof(*Objects)); ++i) {
+        if (IntersectionDetection().pointinCircle(sf::Vector2f(mousepos.x,mousepos.y),Objects[i]) && sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+            Objects[i].picked();
+
+        }
+        else {
+            Objects[i].dropped();
+        }
+        if (Objects[i].isPickedUp()) {
+            Objects[i].setPosition(sf::Vector2f(mousepos.x, mousepos.y));
+            Objects[i].setVelx(0);
+            Objects[i].setVely(0);
+            Objects[i].outputPosition();
+        }
+        else {
+            //Objects[i].isInbounds(bounds);
+            if (wallCollide(Objects[i], bounds) == 1) {
+                Objects[i].setVelx(-Objects[i].LinearVelocity.x * dampner);
+            }
+            if (wallCollide(Objects[i], bounds) == 2) {
+                Objects[i].setVely(-Objects[i].LinearVelocity.y * dampner);
+                Objects[i].changeVely((-Objects[i].Acceleration.y));
+
+            }
+            Objects[i].gravityDragLoop();
+            for (int j = 0; j < (sizeof(Objects) / sizeof(*Objects)); ++j) {
+                if (i != j) {
+                    if (collide(Objects[i], Objects[j])) {
+
+                        sf::Vector2f joiner = sf::Vector2f((Objects[j].Position.x - Objects[i].Position.x), (Objects[j].Position.y - Objects[i].Position.y));
+                        /*
+                        sf::Vector2f v = perpendicularVector(resultForce(Objects[i].Velocity, Objects[j].Velocity));
+                        sf::Vector2f joiner = sf::Vector2f((Objects[j].Position.x - Objects[i].Position.x), (Objects[j].Position.y - Objects[i].Position.y));
+
+                        if (int(Objects[i].Velocity.x) == 0 && int(Objects[j].Velocity.x) == 0) {
+                            v.x = 0;
+                        }
+
+                            Objects[i].setVelocity(sf::Vector2f(v.x * dampner, v.y * dampner));
+                            Objects[j].setVelocity(inverse(sf::Vector2f(v.x * dampner, v.y * dampner)));
+
+                            if (Objects[i].Position.y < Objects[j].Position.y) {
+                                Objects[i].changeVely(-0.5 * (Objects[i].Acceleration.y));
+                            }
+                            else if (Objects[j].Position.y < Objects[i].Position.y){
+                                Objects[j].changeVely(-0.5 * (Objects[j].Acceleration.y));
+                            }
+                            if (Objects[i].Position.x < Objects[j].Position.x) {
+                                Objects[i].changeVelx(-0.3 * (Objects[i].Damping.x));
+                                Objects[j].changeVelx(0.3 * (Objects[j].Damping.x));
+
+                            }
+                            else if (Objects[j].Position.x < Objects[i].Position.x) {
+                                Objects[i].changeVelx(0.3 * (Objects[i].Damping.x));
+                                Objects[j].changeVelx(-0.3 * (Objects[j].Damping.x));
+                            }
+
+                            
+
+
+                        if (Objects[i].Position.y < Objects[j].Position.y || Objects[i].Position.y > Objects[j].Position.y) { // i below j
+                            Objects[i].setVely(-Objects[i].LinearVelocity.y * dampner);
+                            Objects[j].setVely(-Objects[j].LinearVelocity.y * dampner);
+                        }
+                        if (Objects[i].Position.x < Objects[j].Position.x || Objects[i].Position.x > Objects[j].Position.x) { // i left of j
+                            Objects[i].setVelx(-Objects[i].LinearVelocity.x * dampner);
+                            Objects[j].setVelx(-Objects[j].LinearVelocity.x * dampner);
+                        }
+                        
+                        sf::Vector2f v = resultForce(Objects[i].Velocity, Objects[j].Velocity);
+
+                        Objects[i].setVely(v.y);
+                        Objects[i].setVelx(v.x);
+
+                        Objects[j].setVely(-v.y);
+                        Objects[j].setVelx(-v.x);
+                        
+
+                        //Objects[i].penetrate(Objects[j]);
+
+                    }
+                    
+                        if (doNotIntersect(Objects[i], Objects[j])) {
+                            Objects[i].setPosition(sf::Vector2f(Objects[i].Position.x - Objects[i].Size.x, Objects[i].Position.y));
+                            Objects[j].setPosition(sf::Vector2f(Objects[i].Position.x + Objects[i].Size.x, Objects[i].Position.y));
+                        }
+                    }
+                }
+                Objects[i].applyVelocity();
+                //std::cout << Objects[i].Velocity.y << std::endl;
+                Objects[i].outputPosition();
+            }
+        }
+        window.clear();
+        for (int i = 0; i < (sizeof(Objects) / sizeof(*Objects)); ++i) {
+        window.draw(Objects[i].outputShape());
+        }
+
+        sf::VertexArray line;
+        line.append(sf::Vertex(sf::Vector2f(10.f, 10.f)));
+        line.append(sf::Vertex(sf::Vector2f(20.f, 20.f)));
+
+        window.draw(line);
+        window.display();
+    }
+
+    return 0;
+}
+
+*/
+
 void testScreen() {
     int bounds[] = { 800,800 };
     std::vector<sf::Vertex> Bounds;
