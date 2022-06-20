@@ -1340,7 +1340,7 @@ public:
 	}
 };
 
-/*
+
 class Quadtree {
 public:
 	std::vector<sf::Vertex> bounds;
@@ -1418,7 +1418,7 @@ public:
 					}
 				}
 			}
-			/*
+			
 			if (circles[i].rigidbody.getPosition().x > vLine[0].x) {
 				circles[i].rigidbody.sections.S2 = true;
 				circles[i].rigidbody.sections.S3 = true;
@@ -1482,32 +1482,6 @@ public:
 			}
 		}
 	}
-	/*
-	void QuadtreeWall(std::vector<Circle> circles, std::vector<sf::Vertex> bounds) {
-		for (int i = 0; i < s1Rbs.size(); i++) {
 
-			CollisionManifold m = CollisionManifold();
-			//0,1 & 0,4
-			std::vector<sf::Vertex> a = {};
-			a.push_back(bounds[0]);
-			a.push_back(bounds[1]);
-			m = IntersectionDetection().lineandCircle(a, s1Rbs[i]);
-			if (m != CollisionManifold() && m.isColliding()) {
-				s1Rbs
-			}
-
-			std::vector<sf::Vertex> b = {};
-			b.push_back(bounds[0]);
-			b.push_back(bounds[1]);
-			m = IntersectionDetection().lineandCircle(b, s1Rbs[i]);
-
-		}
-		for (int i = 0; i < circles.size(); i++) {
-			if (circles[i].rigidbody.sections.S1 == true || circles[i].rigidbody.sections.S2 == true) {
-			}
-		}
-	}
-	
 
 };
-*/

@@ -16,6 +16,7 @@
 //template <typename T>
 
 struct Node {
+public:
 	int id;
 	sf::Vector2f pos;
 	//Simple obj;
@@ -27,11 +28,13 @@ private:
 	sf::Vector2f topLeft;
 	sf::Vector2f btmRight;
 
-	//Details of Node
-	Node* n;
 
 
 public:
+
+
+	//Details of Node
+	Node* n;
 
 	//Children of Tree
 	Quad* topLeftTree;
@@ -59,7 +62,7 @@ public:
 	}
 	void insert(Node*);
 	bool inBoundary(sf::Vector2f);
-	std::list<Quad*>* getLowestQuads(Quad* q, std::list<Quad*>* lowestQuads ) {
+	std::vector<Quad*>* getLowestQuads(Quad* q, std::vector<Quad*>* lowestQuads ) {
 		//Quad* localQuad = q;
 		if (q != nullptr) {
 			if (q->topLeftTree != NULL) {
@@ -203,3 +206,4 @@ void Quad::insert(Node* node) {
 		}
 	}
 }
+
