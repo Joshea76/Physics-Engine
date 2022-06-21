@@ -11,7 +11,6 @@
 
 //
 #include "CollisionManifold.h"
-#include "PhaseCollision.h"
 //#include "Quadtree.h"
 //#include "Shapes.h"
 //#include "Functions.h"
@@ -185,7 +184,6 @@ void testScreen() {
         std::vector<Quad*> quads = {};
         root.getLowestQuads(&root, &quads);
 
-        std::vector<Quad*>::iterator it;
         for (int i = 0; i < quads.size(); i++) {
 
             Sorter sorter = Sorter();
@@ -193,29 +191,6 @@ void testScreen() {
             circleCols = sorter.circleCols;
 
 
-            /*
-                if (quads[i]->topLeftTree != NULL) {
-                    if (quads[i]->topLeftTree->n->id != -842150451) {
-                        circleCols.push_back(getCircleByID(circles, quads[i]->topLeftTree->n->id));
-                    }
-                }
-                if (quads[i]->topRightTree != NULL) {
-                    if (quads[i]->topRightTree->n->id != -842150451) {
-                        circleCols.push_back(getCircleByID(circles, quads[i]->topRightTree->n->id));
-                    }
-                }
-                if (quads[i]->btmLeftTree != NULL) {
-                    if (quads[i]->btmLeftTree->n->id != -842150451) {
-                        circleCols.push_back(getCircleByID(circles, quads[i]->btmLeftTree->n->id));
-                    }
-                }
-                if (quads[i]->btmRightTree != NULL) {
-                    if (quads[i]->btmRightTree->n->id != -842150451) {
-                        circleCols.push_back(getCircleByID(circles, quads[i]->btmRightTree->n->id));
-                    }
-                }
-
-            */
             
             if (circleCols.size() >= 2) {
                 for (int c1 = 0; c1 < circleCols.size(); c1++) {
@@ -260,51 +235,7 @@ void testScreen() {
         circles = quadtree.sortCircles(circles);
 
             for (int i = 0; i < Objects.size(); ++i) {
-                /*
-                if (Objects.size() > 1) {
-                for (int j = i; j < Objects.size(); ++j) {
-                    if (i == j) { continue; }
-
-
-                    /*
-                    CollisionManifold result = CollisionManifold();
-                    RigidBody r1 = Objects[i];
-                    RigidBody r2 = Objects[j];
-
-        for (int i = 0; i < circles.size(); i++) {
-            Node* n = circles[i].rigidbody.getNode();
-            root.insert(n);
-        }
-        std::vector<Quad*> quads = {};
-        root.getLowestQuads(&root, &quads);
-
-        std::vector<Quad*>::iterator it;
-        for (int i = 0; i < quads.size(); i++) {
-
-            Sorter sorter = Sorter();
-            sorter.sort(quads[i], circles);
-            circleCols = sorter.circleCols;
-
-                    if (result != CollisionManifold() && result.isColliding()) {
-                        bodies1.push_back(r1);
-                        bodies2.push_back(r2);
-                        collisions.push_back(result);
-                        //std::cout << "HIT" << std::endl;
-                        
-
-
-                    }
-                    //std::cout << "B1 " << Objects[i].getLinearVelocity().x << " , " << Objects[i].getLinearVelocity().y << "  " << Objects[i].getForceAccum().y << " ||  ";
-                    //std::cout << "B2 " << Objects[j].getLinearVelocity().x << " , " << Objects[j].getLinearVelocity().y << "  " << Objects[j].getForceAccum().y << std::endl;
-                    */
-
-                    
-
-
-                //}
-            //}
-            //std::cout << "B" << i << " " << Objects[i].getLinearVelocity().x << " , " << Objects[i].getLinearVelocity().y << "  " << Objects[i].getForceAccum().y << std::endl;
-            //circles = quadtree.sortCircles(circles);
+                
             if (circles[i].rigidbody.sections.S1 || circles[i].rigidbody.sections.S2) { // Top wall
                 CollisionManifold wallCollide = IntersectionDetection().wallCollide(std::vector<sf::Vertex>{Bounds[0], Bounds[1]}, circles[i]);
                 if (wallCollide != CollisionManifold() && wallCollide.isColliding()) {
@@ -367,33 +298,6 @@ void testScreen() {
     }
 }
 
-void Balls() {
-    sf::RenderWindow window(sf::VideoMode(800.f,800.f), "Window");
-
-    sf::VertexArray triangle(sf::Triangles, 3);
-
-    // define the position of the triangle's points
-    triangle[0].position = sf::Vector2f(10.f, 10.f);
-    triangle[1].position = sf::Vector2f(100.f, 10.f);
-    triangle[2].position = sf::Vector2f(100.f, 100.f);
-
-    // define the color of the triangle's points
-    triangle[0].color = sf::Color::Red;
-    triangle[1].color = sf::Color::Blue;
-    triangle[2].color = sf::Color::Green;
-
-    while (window.isOpen()) {
-        sf::Event evnt;
-        while (window.pollEvent(evnt)) {
-            if (evnt.type == sf::Event::Closed) {
-                window.close();
-            }
-        }
-        window.clear();
-        window.draw(triangle);
-        window.display();
-    }
-}
 /*
 void treeTesting() {
     sf::RenderWindow window(sf::VideoMode(800, 800), "Window");

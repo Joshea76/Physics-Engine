@@ -204,21 +204,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Dead Code.cpp" />
     <ClCompile Include="main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug UnitTests|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="ThorsIntersectionCode.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CollisionManifold.h" />
     <ClInclude Include="ForceGenerator.h" />
     <ClInclude Include="Functions.h" />
-    <ClInclude Include="PhaseCollision.h" />
-    <ClInclude Include="PhysicsSystem.h" />
     <ClInclude Include="Quadtree.h" />
     <ClInclude Include="Raycast.h" />
-    <ClInclude Include="RectCollide.h" />
     <ClInclude Include="Shapes.h" />
   </ItemGroup>
   <ItemGroup>
