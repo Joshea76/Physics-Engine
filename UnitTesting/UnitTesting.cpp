@@ -312,60 +312,7 @@ BOOST_AUTO_TEST_CASE(Functions_compare_Test_vv2) {
 }
 
 
-BOOST_AUTO_TEST_CASE(Functions_Transform_Constructor_Test1) {
-    //Empty
-    sf::Vector2f expected_value = sf::Vector2f(0.f,0.f);
-    Transform t = Transform();
-    BOOST_CHECK(expected_value == t.position && expected_value == t.scale);
-}
-BOOST_AUTO_TEST_CASE(Functions_Transform_Constructor_Test2) {
-    //PosOnly
-    sf::Vector2f expected_value1 = sf::Vector2f(10.f, 10.f);
-    sf::Vector2f expected_value2 = sf::Vector2f(0.f, 0.f);
-    Transform t = Transform(sf::Vector2f(10.f,10.f));
-    BOOST_CHECK(expected_value1 == t.position && expected_value2 == t.scale);
-}
-BOOST_AUTO_TEST_CASE(Functions_Transform_Constructor_Test3) {
-    sf::Vector2f expected_value1 = sf::Vector2f(10.f, 10.f);
-    sf::Vector2f expected_value2 = sf::Vector2f(20.f, 20.f);
-    Transform t = Transform(sf::Vector2f(10.f, 10.f),sf::Vector2f(20.f,20.f));
-    BOOST_CHECK(expected_value1 == t.position && expected_value2 == t.scale);
-}
-
-BOOST_AUTO_TEST_CASE(Functions_Transform_Copy_Test1) {
-    //Copy To
-    sf::Vector2f expected_value1 = sf::Vector2f(10.f, 10.f);
-    sf::Vector2f expected_value2 = sf::Vector2f(20.f, 20.f);
-    Transform t = Transform(sf::Vector2f(10.f, 10.f), sf::Vector2f(20.f, 20.f));
-    Transform t2 = t.copy();
-    BOOST_CHECK(expected_value1 == t2.position && expected_value2 == t2.scale);
-}
-BOOST_AUTO_TEST_CASE(Functions_Transform_Copy_Test2) {
-    //Copy From
-    sf::Vector2f expected_value1 = sf::Vector2f(10.f, 10.f);
-    sf::Vector2f expected_value2 = sf::Vector2f(20.f, 20.f);
-    Transform t = Transform(sf::Vector2f(10.f, 10.f), sf::Vector2f(20.f, 20.f));
-    Transform t2;
-    t2.copy(t);
-    BOOST_CHECK(expected_value1 == t.position && expected_value2 == t.scale);
-}
 
 BOOST_AUTO_TEST_SUITE_END();
 
 
-BOOST_AUTO_TEST_SUITE(RayCast_Tests);
-
-BOOST_AUTO_TEST_CASE(RayCast_Ray_Test) {
-    //Test Ray Class
-    sf::Vector2f expected_value1 = sf::Vector2f(10.f, 10.f);
-    sf::Vector2f expected_value2 = sf::Vector2f(20.f, 20.f);
-    Ray ray = Ray(sf::Vector2f(10.f, 10.f), sf::Vector2f(20.f, 20.f));
-    BOOST_CHECK(expected_value1 == ray.getOrigin() && expected_value2 == ray.getDirection());
-}
-/*
-BOOST_AUTO_TEST_CASE(RayCast_Result_Constructor_Test) {
-    float expected_value = -1;
-    RaycastResult result = RaycastResult();
-}
-*/
-BOOST_AUTO_TEST_SUITE_END();

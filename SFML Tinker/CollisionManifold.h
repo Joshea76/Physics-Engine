@@ -89,7 +89,6 @@ public:
 class IntersectionDetection {
 public:
 
-	sf::VertexArray Line;
 
 	// point detection 
 	static bool pointOnLine(sf::Vector2f point, sf::VertexArray line) {
@@ -380,76 +379,7 @@ public:
 		//float numerator = (-(1.f + e) * dotProduct(Vel, relativeNormal));
 		sf::Vector2f deltaVel = SubtractVectors(ScaleVector((-abs(Vel)), e), abs(Vel));
 		sf::Vector2f j = ScaleVector(deltaVel, 1 / invMass);
-		//sf::Vector2f forceAccum = rb.getForceAccum();
-		/*
-		int k = 4; 
-		if (abs(rb.getLinearVelocity().y) < 1.f && abs(relativeNormal.x) < abs(relativeNormal.y)) {
-			
-			if (rb.getPosition().y > 400) {
-				k = 2;
-				//j = abs(1.f * ((lengthofVector(g)) * rb.getMass()) + abs(numerator / rb.getInverseMass())) + abs(forceAccum.y);
-				//rb.setForceAccumYZero();
-				//j = abs(1.f * ((lengthofVector(g)) * rb.getMass())) + abs(numerator / rb.getInverseMass());
-				//relativeNormal.y = abs(relativeNormal.y) * -1.f;
-			}
-			else {
-				k = 0;
-				//j = numerator / (rb.getInverseMass());
-			}
-		}
-		if (abs(rb.getLinearVelocity().x) < 1.f && abs(relativeNormal.x) > abs(relativeNormal.y)) {
-			
-			if (rb.getPosition().x > 400) {
-				k = 1;
-				//j = numerator / (rb.getInverseMass());
-				//relativeNormal.x = abs(relativeNormal.x) * -1.f;
-			}
-			else{
-				k = 3;
-				//j = numerator / (rb.getInverseMass());
-				//relativeNormal.x = abs(relativeNormal.x);
-			}
-		}
-		//else {
-			//j = (numerator) / (rb.getInverseMass());
-			/*
-			switch (sect) {
-			case 0: // top
-				relativeNormal.y = abs(relativeNormal.y);
-				break;
-			case 1: // right
-				relativeNormal.x = abs(relativeNormal.x) * -1.f;
-				break;
-			case 2: // bottom
-				relativeNormal.y = abs(relativeNormal.y) * -1.f;
-				break;
-			case 3: // left
-				relativeNormal.x = abs(relativeNormal.x);
-				break;
-			}
-			
-		//}
-		switch (k) {
-		case 0 :
-			j = numerator / (rb.getInverseMass());
-			break;
-		case 1:
-			j = numerator / (rb.getInverseMass());
-			relativeNormal.x = abs(relativeNormal.x) * -1.f;
-			break;
-		case 2:
-			rb.setForceAccumYZero();
-			j = abs(1.f * ((lengthofVector(g)) * rb.getMass())) + abs(numerator / rb.getInverseMass());
-			relativeNormal.y = abs(relativeNormal.y) * -1.f;
-			break;
-		case 3:
-			j = numerator / (rb.getInverseMass());
-			relativeNormal.x = abs(relativeNormal.x);
-			break;
-		default:
-			j = (numerator) / (rb.getInverseMass());
-		}
-		*/
+		
 		
 		switch (sect) {
 		case 0:
@@ -511,7 +441,7 @@ public:
 	}
 };
 
-
+// Sectoional Quadrant Class for walls
 class Quadtree {
 public:
 	std::vector<sf::Vertex> bounds;

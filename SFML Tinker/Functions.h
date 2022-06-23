@@ -108,31 +108,3 @@ sf::Vector2f Midpoint(sf::Vector2f a, sf::Vector2f b) {
     return sf::Vector2f((a.x + b.x) / 2, (a.y + b.y) / 2);
 }
 
-
-class Transform {
-public: 
-    sf::Vector2f position;
-    sf::Vector2f scale;
-
-    Transform() {
-        this->position = sf::Vector2f(0.f, 0.f);
-        this->scale = sf::Vector2f(0.f, 0.f);
-    }
-    Transform(sf::Vector2f position) {
-        this->position = position;
-        this->scale = sf::Vector2f(0.f, 0.f);
-    }
-    Transform(sf::Vector2f position, sf::Vector2f scale) {
-        this->position = position;
-        this->scale = scale;
-    }
-
-    Transform copy() {
-        return Transform(sf::Vector2f(this->position), sf::Vector2f(this->scale));
-    }
-
-    void copy(Transform to) {
-        to.position = this->position;
-        to.scale = this->scale;
-    }
-};

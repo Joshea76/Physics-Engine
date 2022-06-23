@@ -23,12 +23,6 @@ public:
 	sf::Vector2f getForce() {
 		return this->force;
 	}
-	/*
-	virtual RigidBody updateForce(RigidBody body, float dt) {
-		body.addForce(ScaleVector(force, body.getMass()));
-		return body;
-	};
-	*/
 	virtual sf::Vector2f updateForce(float Mass, float dt) {
 		return ScaleVector(force, Mass);
 	}
