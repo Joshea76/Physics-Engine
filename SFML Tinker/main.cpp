@@ -80,9 +80,9 @@ void testScreen() {
 
 
     //Shit tonne of circles
-    for (int i = 1; i < 10; i++) {
-        for (int j = 1; j < 10; j++){
-        Circle circ(((objIDs.back()) + 1), sf::Vector2f((i*51.f) + 150.f, (j*101.f)), 15.f, 0.0f, sf::Color(0.f, 0.f, 255.f));
+    for (int i = 1; i < 11; i++) {
+        for (int j = 1; j < 13; j++){
+        Circle circ(((objIDs.back()) + 1), sf::Vector2f((i*51.f) + 150.f, (j*25.f)), 10.f, 0.0f, sf::Color(0.f, 0.f, 255.f));
         objIDs.push_back(objIDs.back() + 1); // create id
         circ.rigidbody.setMass(10.f);
         if (i % 2 == 0) {

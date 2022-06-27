@@ -24,6 +24,7 @@ public:
 
 	CollisionManifold() {
 		normal = sf::Vector2f();
+		this->contactPoints = std::vector<sf::Vector2f>();
 		depth = 0.0f;
 		iscolliding = false;
 	}

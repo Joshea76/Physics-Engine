@@ -21,35 +21,15 @@ public:
     }
 
     void reset() {
-        S1, S2, S3, S4 = false;
+        S1 = false;S2 = false;S3 = false;S4 = false;
     }
 
     void setAllTrue() {
-        S1, S2, S3, S4 = true;
+        S1 = true;S2 = true;S3 = true;S4 = true;
     }
 
 };
 
-class Simple {
-public:
-    sf::Vector2f topLeft, btmRight;
-    int id;
-
-    Simple(int id) {
-        this->id = id;
-        this->topLeft = sf::Vector2f(0.f, 0.f);
-        this->btmRight = sf::Vector2f(0.f, 0.f);
-    }
-    Simple(sf::Vector2f tl, sf::Vector2f br, int id) {
-        this->id = id;
-        this->topLeft = tl;
-        this->btmRight = br;
-    }
-    void setPoints(sf::Vector2f tl, sf::Vector2f br) {
-        this->topLeft = tl;
-        this->btmRight = br;
-    }
-};
 
 
 class RigidBody {
@@ -189,7 +169,7 @@ public:
 
 class Circle {
 private:
-    sf::Vector2f size, acceleration;
+    sf::Vector2f size;
     sf::CircleShape self;
     float mass, radius;
     bool pickedUp = false;
@@ -197,7 +177,6 @@ private:
 public:
 
     RigidBody rigidbody;
-    Simple point = Simple(id);
 
     bool operator == (const RigidBody& fr) const { return (this->id == fr.id); }
     bool operator != (const RigidBody& fr) const { return !operator==(fr); }
@@ -309,22 +288,9 @@ public:
         self.setOrigin(s.x / 2, s.y / 2);
         setRadius(s.x / 2);
     }
-    /*
-    int insideMe(sf::Vector2i mousepos) {
-        if (mousepos.x > Vertices[0].position.x && mousepos.x < Vertices[3].position.x && mousepos.y > Vertices[0].position.y && mousepos.y < Vertices[3].position.y) {
-            return 1;
-        }
-        else { return 0; }
-    */
-
-
-   
-    void setAccX(float x) { acceleration.x = x; }
-    void setAccY(float y) { acceleration.y = y; }
-    sf::Vector2f getAcc() { return this->acceleration; }
     
 
-    void setRadius(float r) { radius = r; }
+    void setRadius(float r) { radius = r; self.setRadius(r); }
     float getRadius() { 
         return this->radius;//self.getRadius();
     }
@@ -337,13 +303,6 @@ public:
         return self; 
     }
 
-    Simple getSimple() {
-        sf::Vector2f pos = this->rigidbody.getPosition();
-        sf::Vector2f tl = AddToVector(pos, this->radius);
-        sf::Vector2f br = AddToVector(pos, this->radius * -1.f);
-        this->point.setPoints(tl, br);
-        return this->point;
-    }
 
 };
 

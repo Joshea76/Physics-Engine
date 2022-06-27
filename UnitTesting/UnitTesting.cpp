@@ -30,21 +30,33 @@ BOOST_AUTO_TEST_SUITE(RigidBody_Tests);
     BOOST_AUTO_TEST_CASE(Rigidbody_Contsructor_Test2) {
         float expected_value = 12.07;
 
-        //RigidBody rb = RigidBody(sf::Vector2f(1.f, 1.f), 3.14, 12.07);
+        RigidBody rb1 = RigidBody(sf::Vector2f(1.f, 1.f), 3.14, 12.07);
 
-        BOOST_CHECK(expected_value == rb.getRotation());
+        BOOST_CHECK(expected_value == rb1.getRotation());
     }
     BOOST_AUTO_TEST_CASE(Rigidbody_Contsructor_Test3) {
         sf::Vector2f expected_value = sf::Vector2f(1.f,1.f);
 
-        //RigidBody rb = RigidBody(sf::Vector2f(1.f, 1.f), 3.14, 12.07);
+        RigidBody rb2 = RigidBody(sf::Vector2f(1.f, 1.f), 3.14, 12.07);
 
-        BOOST_CHECK(expected_value == rb.getPosition());
+        BOOST_CHECK(expected_value == rb2.getPosition());
     }
 
-    BOOST_AUTO_TEST_CASE(Rigidbody_SetPosition_Test) {
+    BOOST_AUTO_TEST_CASE(Rigidbody_SetID_Test) {
+        int expected_value = 7;
+        rb.setID(7);
+        BOOST_CHECK(expected_value == rb.getID());
+    }
+    BOOST_AUTO_TEST_CASE(Rigidbody_SetPosition_Test1) {
         sf::Vector2f expected_value = sf::Vector2f(64.f, 64.f);
         rb.setPosition(sf::Vector2f(64.f, 64.f));
+        BOOST_CHECK(expected_value == rb.getPosition());
+    }
+    BOOST_AUTO_TEST_CASE(Rigidbody_SetPosition_Test2) {
+        sf::Vector2f expected_value = sf::Vector2f(128.f, 128.f);
+        rb.setPosition(sf::Vector2f(0.f, 0.f));
+        rb.setPosition(sf::Vector2f(64.f, 64.f));
+        rb.addPosition(sf::Vector2f(64.f, 64.f));
         BOOST_CHECK(expected_value == rb.getPosition());
     }
     BOOST_AUTO_TEST_CASE(Rigidbody_SetRotation_Test) {
@@ -82,15 +94,121 @@ BOOST_AUTO_TEST_SUITE(RigidBody_Tests);
         rb.setTransform(sf::Vector2f(20.f, 20.f), 127);
         BOOST_CHECK(expected_value == rb.getRotation());
     }
+    BOOST_AUTO_TEST_CASE(Rigidbody_SetCor_Test) {
+        float expected_value = 127;
+        rb.setTransform(sf::Vector2f(20.f, 20.f), 127);
+        BOOST_CHECK(expected_value == rb.getRotation());
+    }
+    BOOST_AUTO_TEST_CASE(Rigidbody_AddForce_Test1) {
+        sf::Vector2f expected_value = sf::Vector2f(10.f, 10.f);
+        rb.addForce(sf::Vector2f(10.f, 10.f));
+        BOOST_CHECK(expected_value == rb.getForceAccum());
+    }
+    BOOST_AUTO_TEST_CASE(Rigidbody_clearAccumulators_Test) {
+        sf::Vector2f expected_value = sf::Vector2f(0.f,0.f);
+        rb.addForce(sf::Vector2f(690.f, 13475.f));
+        rb.clearAccumulators();
+        BOOST_CHECK(expected_value == rb.getForceAccum());
+    }
+    BOOST_AUTO_TEST_CASE(Rigidbody_addLocalForce_Test) {
+        float expected_value = 0;
+        rb.addLocalForce(sf::Vector2f(10.f,10.f));
+        BOOST_CHECK(expected_value < rb.getLocalForces().size());
+    }
+    BOOST_AUTO_TEST_CASE(Rigidbody_removceLocalForces_Test) {
+        float expected_value = 0;
+        rb.addLocalForce(sf::Vector2f(10.f, 10.f));
+        rb.removeLocalForces();
+        BOOST_CHECK(expected_value == rb.getLocalForces().size());
+    }
+    BOOST_AUTO_TEST_CASE(Rigidbody_addLinearVelocity_Test) {
+        sf::Vector2f expected_value = sf::Vector2f(10.f, 10.f);
+        rb.addLinearVelocity(sf::Vector2f(10.f, 10.f));
+        BOOST_CHECK(expected_value == rb.getLinearVelocity());
+    }
+    BOOST_AUTO_TEST_CASE(Rigidbody_setlinearVelocity_Test) {
+        sf::Vector2f expected_value = sf::Vector2f(10.f, 10.f);
+        rb.setLinearVelocity(sf::Vector2f(10.f, 10.f));
+        BOOST_CHECK(expected_value == rb.getLinearVelocity());
+    }
+    BOOST_AUTO_TEST_CASE(Rigidbody_getNode_Test) {
+        float expected_value = 11;
+        rb.node->id = 11;
+        BOOST_CHECK(expected_value == rb.getNode()->id);
+    }
     //Need Force Accum TESTs / not implemented yet
 
-    BOOST_AUTO_TEST_CASE(Test) {
-        BOOST_CHECK(false);
-    }
 
 BOOST_AUTO_TEST_SUITE_END();
 
 
+
+BOOST_AUTO_TEST_SUITE(Circle_Tests);
+
+    
+    
+    BOOST_AUTO_TEST_CASE(Circle_Constructor_Test1) {
+        float expected_value = 0;
+        Circle circ = Circle();
+        BOOST_CHECK(expected_value == circ.getID());
+    }
+    BOOST_AUTO_TEST_CASE(Circle_Constructor_Test2) {
+        float expected_value = 0;
+        Circle circ = Circle(0, sf::Vector2f(100.f, 100.f), 10.f, 0.f, sf::Color(255, 0, 0));
+        BOOST_CHECK(expected_value == circ.getID());
+    }
+    BOOST_AUTO_TEST_CASE(Circle_Constructor_Test3) {
+        float expected_value = 0;
+        Circle circ = Circle(0, sf::Vector2f(100.f, 100.f), 10.f, 0.f);
+        BOOST_CHECK(expected_value == circ.getID());
+    }
+    BOOST_AUTO_TEST_CASE(Circle_Constructor_Test4) {
+        float expected_value = 0;
+        Circle circ = Circle(0, sf::Vector2f(100.f, 100.f), 10.f);
+        BOOST_CHECK(expected_value == circ.getID());
+    }
+    BOOST_AUTO_TEST_CASE(Circle_Constructor_Test5) {
+        float expected_value = 0;
+        Circle circ = Circle(0, sf::Vector2f(100.f, 100.f), 10.f, sf::Color(255, 0, 0));
+        BOOST_CHECK(expected_value == circ.getID());
+    }
+
+    Circle circ = Circle();
+    BOOST_AUTO_TEST_CASE(Circle_setID_Test) {
+        float expected_value = 11;
+        circ.setID(11);
+        BOOST_CHECK(expected_value == circ.getID());
+    }
+    BOOST_AUTO_TEST_CASE(Circle_setRigidodyToSelf_Test) {
+        circ.setRigidbodyToSelf(circ.rigidbody);
+        BOOST_CHECK(circ.rigidbody.getPosition() == circ.outputShape().getPosition());
+    }
+    BOOST_AUTO_TEST_CASE(Circle_setRigidody_Test) {
+        circ.setRigidbody(circ.rigidbody);
+        BOOST_CHECK(circ.rigidbody.getPosition() == circ.outputShape().getPosition());
+    }
+    BOOST_AUTO_TEST_CASE(Circle_setColor_Test) {
+        sf::Color expected_value = sf::Color(100.f,100.f,100.f);
+        circ.setColor(sf::Color(100.f, 100.f, 100.f));
+        BOOST_CHECK(expected_value == circ.outputShape().getFillColor());
+    }
+    BOOST_AUTO_TEST_CASE(Circle_setSize_Test) {
+        float expected_value = 27.f;
+        circ.setSize(sf::Vector2f(54.f,54.f));
+        BOOST_CHECK(expected_value == circ.outputShape().getRadius());
+    }
+    BOOST_AUTO_TEST_CASE(Circle_setRadius_Test1) {
+        float expected_value = 27.f;
+        circ.setRadius(27.f);
+        BOOST_CHECK(expected_value == circ.getRadius());
+    }
+    BOOST_AUTO_TEST_CASE(Circle_setRadius_Test2) {
+        float expected_value = 27.f;
+        circ.setRadius(27.f);
+        BOOST_CHECK(expected_value == circ.outputShape().getRadius());
+    }
+
+BOOST_AUTO_TEST_SUITE_END();
 
 BOOST_AUTO_TEST_SUITE(Functions_Tests);
 
@@ -156,6 +274,25 @@ BOOST_AUTO_TEST_CASE(Functions_ScaleVector_Test_Zero) {
     sf::Vector2f a = sf::Vector2f(24.f, 12.f);
     float b = 0;
     BOOST_CHECK(expected_value == ScaleVector(a, b));
+}
+
+BOOST_AUTO_TEST_CASE(Functions_AddToVector_Test_Pos) {
+    sf::Vector2f expected_value = sf::Vector2f(20.f, 20.f);
+    sf::Vector2f a = sf::Vector2f(10.f, 10.f);
+    float b = 10;
+    BOOST_CHECK(expected_value == AddToVector(a, b));
+}
+BOOST_AUTO_TEST_CASE(Functions_AddToVector_Test_Neg) {
+    sf::Vector2f expected_value = sf::Vector2f(5.f, 5.f);
+    sf::Vector2f a = sf::Vector2f(10.f, 10.f);
+    float b = -5;
+    BOOST_CHECK(expected_value == AddToVector(a, b));
+}
+BOOST_AUTO_TEST_CASE(Functions_AddToVector_Test_Zero) {
+    sf::Vector2f expected_value = sf::Vector2f(0.f, 0.f);
+    sf::Vector2f a = sf::Vector2f(0.f, 0.f);
+    float b = 0;
+    BOOST_CHECK(expected_value == AddToVector(a, b));
 }
 
 BOOST_AUTO_TEST_CASE(Functions_resultForce_Test1) {
@@ -247,7 +384,12 @@ BOOST_AUTO_TEST_CASE(Functions_DegToRadians_Test1) {
     BOOST_CHECK(expected_value == DegtoRadians(a));
 }
 
-//same  number grow up ffs
+BOOST_AUTO_TEST_CASE(Functions_abs_Test1) {
+    sf::Vector2f expected_value = sf::Vector2f(10.f,10.f);
+    sf::Vector2f a = sf::Vector2f(-10.f,-10.f);
+    BOOST_CHECK(expected_value == abs(a));
+}
+
 BOOST_AUTO_TEST_CASE(Functions_RotateVector_Test1) {
     sf::Vector2f expected_value = sf::Vector2f(0.f,1.41421f);
     sf::Vector2f vec = sf::Vector2f(1.f,1.f);
@@ -311,8 +453,288 @@ BOOST_AUTO_TEST_CASE(Functions_compare_Test_vv2) {
     BOOST_CHECK(expected_value == compare(v1, v2));
 }
 
+BOOST_AUTO_TEST_CASE(Functions_MidPoint_Test1) {
+    sf::Vector2f expected_value = sf::Vector2f(5.f,5.f);
+    sf::Vector2f a = sf::Vector2f(10.f, 10.f);
+    sf::Vector2f b = sf::Vector2f(0.f, 0.f);
+    BOOST_CHECK(expected_value == Midpoint(a, b));
+}
+BOOST_AUTO_TEST_CASE(Functions_MidPoint_Test_Neg) {
+    sf::Vector2f expected_value = sf::Vector2f(-5.f, -5.f);
+    sf::Vector2f a = sf::Vector2f(-10.f, -10.f);
+    sf::Vector2f b = sf::Vector2f(0.f, 0.f);
+    BOOST_CHECK(expected_value == Midpoint(a, b));
+}
 
 
 BOOST_AUTO_TEST_SUITE_END();
 
 
+BOOST_AUTO_TEST_SUITE(CollisionManifold_Tests);
+
+BOOST_AUTO_TEST_CASE(CollisionManifold_Constructor_Test1) {
+    float expected_value = 0.0f;
+    sf::Vector2f expected_value2 = sf::Vector2f();
+    bool expected_value3 = false;
+    CollisionManifold m = CollisionManifold();
+    BOOST_CHECK(expected_value == m.getDepth() && expected_value2 == m.getNormal() && expected_value3 == m.isColliding());
+}
+BOOST_AUTO_TEST_CASE(CollisionManifold_Constructor_Test2) {
+    float expected_value = 12.f;
+    sf::Vector2f expected_value2 = sf::Vector2f(14.f,14.f);
+    bool expected_value3 = true;
+    CollisionManifold m = CollisionManifold(sf::Vector2f(14.f,14.f),12.f);
+    BOOST_CHECK(expected_value == m.getDepth() && expected_value2 == m.getNormal() && expected_value3 == m.isColliding());
+}
+
+CollisionManifold m = CollisionManifold();
+BOOST_AUTO_TEST_CASE(CollisionManifold_addContactPoint_Test) {
+    float expected_value = 0;
+    m.addContactPoint(sf::Vector2f());
+    BOOST_CHECK(expected_value < m.getContactPoints().size());
+}
+
+BOOST_AUTO_TEST_SUITE_END();
+
+
+BOOST_AUTO_TEST_SUITE(Collisions_Tests);
+
+    // X No Collide 
+    Circle a_nch = Circle(0, sf::Vector2f(100.f, 100.f), 25.f, sf::Color(255, 0, 0));
+    Circle b_nch = Circle(0, sf::Vector2f(151.f, 100.f), 25.f, sf::Color(255, 0, 0));
+    CollisionManifold m_nch = Collisions().findcollisionfeatures(a_nch, b_nch);
+    BOOST_AUTO_TEST_CASE(Collisions_findCollisionFeatures_NoCollide_Horizontal_Test) {
+        bool expected_value = false;
+        BOOST_CHECK(expected_value == m_nch.isColliding());
+    }
+    // Y No Collide
+    Circle a_ncv = Circle(0, sf::Vector2f(100.f, 100.f), 25.f, sf::Color(255, 0, 0));
+    Circle b_ncv = Circle(0, sf::Vector2f(100.f, 151.f), 25.f, sf::Color(255, 0, 0));
+    CollisionManifold m_ncv = Collisions().findcollisionfeatures(a_ncv, b_ncv);
+    BOOST_AUTO_TEST_CASE(Collisions_findCollisionFeatures_NoCollide_Vertical_Test) {
+        bool expected_value = false;
+        BOOST_CHECK(expected_value == m_ncv.isColliding());
+    }
+    // Diagonal No Collide
+    Circle a_ncd = Circle(0, sf::Vector2f(100.f, 100.f), 25.f, sf::Color(255, 0, 0));
+    Circle b_ncd = Circle(0, sf::Vector2f(150.f, 150.f), 25.f, sf::Color(255, 0, 0));
+    CollisionManifold m_ncd = Collisions().findcollisionfeatures(a_ncd, b_ncd);
+    BOOST_AUTO_TEST_CASE(Collisions_findCollisionFeatures_NoCollide_Diagonal_Test) {
+        bool expected_value = false;
+        BOOST_CHECK(expected_value == m_ncd.isColliding());
+    }
+    // Extreme Value No Collide
+    Circle a_ncext = Circle(0, sf::Vector2f(1000.f, 1000.f), 25.f, sf::Color(255, 0, 0));
+    Circle b_ncext = Circle(0, sf::Vector2f(0.f, 0.f), 25.f, sf::Color(255, 0, 0));
+    CollisionManifold m_ncext = Collisions().findcollisionfeatures(a_ncext, b_ncext);
+    BOOST_AUTO_TEST_CASE(Collisions_findCollisionFeatures_NoCollide_Extreme_Test) {
+        bool expected_value = false;
+        BOOST_CHECK(expected_value == m_ncext.isColliding());
+    }
+
+    // X intersect - no Swap
+    Circle a_x1 = Circle(0, sf::Vector2f(100.f, 100.f), 25.f, sf::Color(255, 0, 0));
+    Circle b_x1 = Circle(0, sf::Vector2f(149.f, 100.f), 25.f, sf::Color(255, 0, 0));
+    CollisionManifold m_x1 = Collisions().findcollisionfeatures(a_x1, b_x1);
+    BOOST_AUTO_TEST_CASE(Collisions_findCollisionFeatures_Horizontal_Test_NS_Colliding) {
+        bool expected_value = true;
+        BOOST_CHECK(expected_value == m_x1.isColliding());
+    }
+    BOOST_AUTO_TEST_CASE(Collisions_findCollisionFeatures_Horizontal_Test_NS_Depth) {
+        float expected_value = -0.5f;
+        BOOST_CHECK(expected_value == m_x1.getDepth());
+    }
+    BOOST_AUTO_TEST_CASE(Collisions_findCollisionFeatures_Horizontal_Test_NS_Normal) {
+        sf::Vector2f expected_value = sf::Vector2f(1.f,0.f);
+        BOOST_CHECK(expected_value == m_x1.getNormal());
+    }
+    BOOST_AUTO_TEST_CASE(Collisions_findCollisionFeatures_Horizontal_Test_NS_ContactPoint) {
+        sf::Vector2f expected_value = sf::Vector2f(149.f, 100.f);
+        BOOST_CHECK(expected_value == m_x1.getContactPoints()[0]);
+    }
+
+    // Y intersect - no Swap
+    Circle a_y1 = Circle(0, sf::Vector2f(100.f, 100.f), 25.f, sf::Color(255, 0, 0));
+    Circle b_y1 = Circle(0, sf::Vector2f(100.f, 149.f), 25.f, sf::Color(255, 0, 0));
+    CollisionManifold m_y1 = Collisions().findcollisionfeatures(a_y1, b_y1);
+    BOOST_AUTO_TEST_CASE(Collisions_findCollisionFeatures_Vertical_Test_NS_Colliding) {
+        bool expected_value = true;
+        BOOST_CHECK(expected_value == m_y1.isColliding());
+    }
+    BOOST_AUTO_TEST_CASE(Collisions_findCollisionFeatures_Vertical_Test_NS_Depth) {
+        float expected_value = -0.5f;
+        BOOST_CHECK(expected_value == m_y1.getDepth());
+    }
+    BOOST_AUTO_TEST_CASE(Collisions_findCollisionFeatures_Vertical_Test_NS_Normal) {
+        sf::Vector2f expected_value = sf::Vector2f(0.f, -1.f);
+        BOOST_CHECK(expected_value == m_y1.getNormal());
+    }
+    BOOST_AUTO_TEST_CASE(Collisions_findCollisionFeatures_Vertical_Test_NS_ContactPoint) {
+        sf::Vector2f expected_value = sf::Vector2f(100.f, 198.f);
+        std::cout << m_y1.getContactPoints()[0].y;
+        BOOST_CHECK(expected_value == m_y1.getContactPoints()[0]);
+    }
+
+    // X intersect - Swap
+    Circle a_x2 = Circle(0, sf::Vector2f(149.f, 100.f), 25.f, sf::Color(255, 0, 0));
+    Circle b_x2 = Circle(0, sf::Vector2f(100.f, 100.f), 25.f, sf::Color(255, 0, 0));
+    CollisionManifold m_x2 = Collisions().findcollisionfeatures(a_x2, b_x2);
+    BOOST_AUTO_TEST_CASE(Collisions_findCollisionFeatures_Horizontal_Test_S_Colliding) {
+        bool expected_value = true;
+        BOOST_CHECK(expected_value == m_x2.isColliding());
+    }
+    BOOST_AUTO_TEST_CASE(Collisions_findCollisionFeatures_Horizontal_Test_S_Depth) {
+        float expected_value = -0.5f;
+        BOOST_CHECK(expected_value == m_x2.getDepth());
+    }
+    BOOST_AUTO_TEST_CASE(Collisions_findCollisionFeatures_Horizontal_Test_S_Normal) {
+        sf::Vector2f expected_value = sf::Vector2f(1.f, 0.f);
+        BOOST_CHECK(expected_value == m_x2.getNormal());
+    }
+    BOOST_AUTO_TEST_CASE(Collisions_findCollisionFeatures_Horizontal_Test_S_ContactPoint) {
+        sf::Vector2f expected_value = sf::Vector2f(149.f, 100.f);
+        BOOST_CHECK(expected_value == m_x2.getContactPoints()[0]);
+    }
+
+    // Y intersect - Swap
+    Circle a_y2 = Circle(0, sf::Vector2f(100.f, 149.f), 25.f, sf::Color(255, 0, 0));
+    Circle b_y2 = Circle(0, sf::Vector2f(100.f, 100.f), 25.f, sf::Color(255, 0, 0));
+    CollisionManifold m_y2 = Collisions().findcollisionfeatures(a_y2, b_y2);
+    BOOST_AUTO_TEST_CASE(Collisions_findCollisionFeatures_Vertical_Test_S_Colliding) {
+        bool expected_value = true;
+        BOOST_CHECK(expected_value == m_y2.isColliding());
+    }
+    BOOST_AUTO_TEST_CASE(Collisions_findCollisionFeatures_Vertical_Test_S_Depth) {
+        float expected_value = -0.5f;
+        BOOST_CHECK(expected_value == m_y2.getDepth());
+    }
+    BOOST_AUTO_TEST_CASE(Collisions_findCollisionFeatures_Vertical_Test_S_Normal) {
+        sf::Vector2f expected_value = sf::Vector2f(0.f, -1.f);
+        BOOST_CHECK(expected_value == m_y2.getNormal());
+    }
+    BOOST_AUTO_TEST_CASE(Collisions_findCollisionFeatures_Vertical_Test_S_ContactPoint) {
+        sf::Vector2f expected_value = sf::Vector2f(100.f, 198.f);
+        BOOST_CHECK(expected_value == m_y2.getContactPoints()[0]);
+    }
+
+    // Diagonal - no Swap
+    Circle a_d1 = Circle(0, sf::Vector2f(100.f, 100.f), 25.f, sf::Color(255, 0, 0));
+    Circle b_d1 = Circle(0, sf::Vector2f(124.5f, 124.5f), 25.f, sf::Color(255, 0, 0));
+    CollisionManifold m_d1 = Collisions().findcollisionfeatures(a_d1, b_d1);
+    BOOST_AUTO_TEST_CASE(Collisions_findCollisionFeatures_Diagonal_Test_NS_Colliding) {
+        bool expected_value = true;
+        BOOST_CHECK(expected_value == m_d1.isColliding());
+    }
+    BOOST_AUTO_TEST_CASE(Collisions_findCollisionFeatures_Diagonal_Test_NS_Depth) {
+        float expected_value = -7.67588f;
+        BOOST_CHECK(floor(expected_value * 1000) == floor(m_d1.getDepth() * 1000));
+    }
+    BOOST_AUTO_TEST_CASE(Collisions_findCollisionFeatures_Diagonal_Test_NS_Normal) {
+        sf::Vector2f expected_value = sf::Vector2f(-0.707107f, -0.707107f);
+        BOOST_CHECK(floor(expected_value.x * 1000) == floor(m_d1.getNormal().x * 1000) && floor(expected_value.y * 1000) == floor(m_d1.getNormal().y * 1000));
+    }
+    BOOST_AUTO_TEST_CASE(Collisions_findCollisionFeatures_Diagonal_Test_NS_ContactPoint) {
+        sf::Vector2f expected_value = sf::Vector2f(141.824f, 141.824f);
+        BOOST_CHECK(floor(expected_value.x * 1000) == floor(m_d1.getContactPoints()[0].x * 1000) && floor(expected_value.y * 1000) == floor(m_d1.getContactPoints()[0].y * 1000));
+    }
+
+
+    // Y intersect - Swap
+    Circle a_d2 = Circle(0, sf::Vector2f(124.5f, 124.5f), 25.f, sf::Color(255, 0, 0));
+    Circle b_d2 = Circle(0, sf::Vector2f(100.f, 100.f), 25.f, sf::Color(255, 0, 0));
+    CollisionManifold m_d2 = Collisions().findcollisionfeatures(a_d2, b_d2);
+    BOOST_AUTO_TEST_CASE(Collisions_findCollisionFeatures_Diagonal_Test_S_Colliding) {
+        bool expected_value = true;
+        BOOST_CHECK(expected_value == m_d2.isColliding());
+    }
+    BOOST_AUTO_TEST_CASE(Collisions_findCollisionFeatures_Diagonal_Test_S_Depth) {
+        float expected_value = -7.67588f;
+        BOOST_CHECK(floor(expected_value * 1000) == floor(m_d2.getDepth() * 1000));
+    }
+    BOOST_AUTO_TEST_CASE(Collisions_findCollisionFeatures_Diagonal_Test_S_Normal) {
+        sf::Vector2f expected_value = sf::Vector2f(0.707107f, 0.707107f);
+        BOOST_CHECK(floor(expected_value.x * 1000) == floor(m_d2.getNormal().x * 1000) && floor(expected_value.y * 1000) == floor(m_d2.getNormal().y * 1000));
+
+    }
+    BOOST_AUTO_TEST_CASE(Collisions_findCollisionFeatures_Diagonal_Test_S_ContactPoint) {
+        sf::Vector2f expected_value = sf::Vector2f(141.824f, 141.824f);
+        BOOST_CHECK(floor(expected_value.x * 1000) == floor(m_d2.getContactPoints()[0].x * 1000) && floor(expected_value.y * 1000) == floor(m_d2.getContactPoints()[0].y * 1000));
+    }
+
+BOOST_AUTO_TEST_SUITE_END();
+
+
+BOOST_AUTO_TEST_SUITE(ForceGenerator_Tests)
+
+    BOOST_AUTO_TEST_CASE(ForceGenerator_Constructor_Test1) {
+        sf::Vector2f expected_value = sf::Vector2f(0.f,0.f);
+        ForceGenerator fg = ForceGenerator();
+        BOOST_CHECK(expected_value == fg.getForce());
+    }
+    BOOST_AUTO_TEST_CASE(ForceGenerator_Constructor_Test2) {
+        sf::Vector2f expected_value = sf::Vector2f(10.f, 10.f);
+        ForceGenerator fg = ForceGenerator(sf::Vector2f(10.f, 10.f));
+        BOOST_CHECK(expected_value == fg.getForce());
+    }
+
+    ForceGenerator fg = ForceGenerator();
+    BOOST_AUTO_TEST_CASE(ForceGenerator_setForce_Test) {
+        sf::Vector2f expected_value = sf::Vector2f(10.f, 10.f);
+        fg.setForce(sf::Vector2f(10.f, 10.f));
+        BOOST_CHECK(expected_value == fg.getForce());
+    }
+    BOOST_AUTO_TEST_CASE(ForceGenerator_updateForce_Test) {
+        sf::Vector2f expected_value = sf::Vector2f(20.f, 20.f);
+        fg.setForce(sf::Vector2f(10.f, 10.f));
+        BOOST_CHECK(expected_value == fg.updateForce(2.f, 0.16f));
+    }
+
+BOOST_AUTO_TEST_SUITE_END();
+
+
+
+BOOST_AUTO_TEST_SUITE(Section_Tests)
+
+    BOOST_AUTO_TEST_CASE(Section_Constructor_Test) {
+        bool expected_value = false;
+        Section s = Section();
+        BOOST_CHECK(s.S1 == expected_value && s.S2 == expected_value && s.S3 == expected_value && s.S4 == expected_value);
+    }
+    
+    Section s = Section();
+
+    BOOST_AUTO_TEST_CASE(Section_S1_Test) {
+        bool expected_value = true;
+        s.S1 = true;
+        BOOST_CHECK(expected_value == s.S1);
+    }
+    BOOST_AUTO_TEST_CASE(Section_S2_Test) {
+        bool expected_value = true;
+        s.S2 = true;
+        BOOST_CHECK(expected_value == s.S2);
+    }
+    BOOST_AUTO_TEST_CASE(Section_S3_Test) {
+        bool expected_value = true;
+        s.S3 = true;
+        BOOST_CHECK(expected_value == s.S3);
+    }
+    BOOST_AUTO_TEST_CASE(Section_S4_Test) {
+        bool expected_value = true;
+        s.S4 = true;
+        BOOST_CHECK(expected_value == s.S4);
+    }
+
+    BOOST_AUTO_TEST_CASE(Section_reset_Test) {
+        bool expected_value = false;
+        s.S1, s.S2, s.S3, s.S4 = false, true, false, true;
+        s.reset();
+        BOOST_CHECK(s.S1 == expected_value && s.S2 == expected_value && s.S3 == expected_value && s.S4 == expected_value);
+    }
+    BOOST_AUTO_TEST_CASE(Section_setAllTrue_Test) {
+        bool expected_value = true;
+        s.S1, s.S2, s.S3, s.S4 = false, true, false, true;
+        s.setAllTrue();
+        BOOST_CHECK(s.S1 == expected_value && s.S2 == expected_value && s.S3 == expected_value && s.S4 == expected_value);
+    }
+
+BOOST_AUTO_TEST_SUITE_END();
