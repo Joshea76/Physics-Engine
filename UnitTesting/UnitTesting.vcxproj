@@ -116,7 +116,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\C++ Libs\SFML-2.5.1\include;../SFML Tinker/Shapes.h;../SFML Tinker/CollisionManifold.h;../SFML Tinker/Functions.h;C:/Program Files/boost_1_75_0;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\C++ Libs\SFML-2.5.1\include;C:/Program Files/boost_1_75_0;.. / SFML Tinker / Shapes.h; .. / SFML Tinker / CollisionManifold.h; .. / SFML Tinker / Functions.h;</AdditionalIncludeDirectories>
+      <AdditionalUsingDirectories>
+      </AdditionalUsingDirectories>
+      <AdditionalHeaderUnitDependencies>
+      </AdditionalHeaderUnitDependencies>
+      <ForcedUsingFiles>#define private public;</ForcedUsingFiles>
+      <PrecompiledHeaderFile>stdafx.h; Testing.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -133,7 +139,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\C++ Libs\SFML-2.5.1\include;../SFML Tinker/Shapes.h;../SFML Tinker/CollisionManifold.h;../SFML Tinker/Functions.h;C:/Program Files/boost_1_75_0;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\C++ Libs\SFML-2.5.1\include;C:/Program Files/boost_1_75_0;.. / SFML Tinker / Shapes.h; .. / SFML Tinker / CollisionManifold.h; .. / SFML Tinker / Functions.h;</AdditionalIncludeDirectories>
+      <AdditionalUsingDirectories>
+      </AdditionalUsingDirectories>
+      <AdditionalHeaderUnitDependencies>
+      </AdditionalHeaderUnitDependencies>
+      <ForcedUsingFiles>#define private public;</ForcedUsingFiles>
+      <PrecompiledHeaderFile>stdafx.h; Testing.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

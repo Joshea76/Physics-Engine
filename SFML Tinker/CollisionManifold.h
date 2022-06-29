@@ -332,6 +332,7 @@ public:
 
 		sf::Vector2f relativeVel = sf::Vector2f(SubtractVectors(b.getLinearVelocity(), a.getLinearVelocity()));
 		sf::Vector2f relativeNormal = sf::Vector2f(normalise(m.getNormal()));
+		relativeVel = MultiplyVectors(relativeVel, relativeNormal);
 		
 		//Moving away from eachother do nothing
 		if (dotProduct(relativeVel, relativeNormal) > 0.f) { 
@@ -340,16 +341,17 @@ public:
 		if (swapped) { relativeNormal = -relativeNormal; }
 
 		float e = std::min(a.getCor(), b.getCor());
-		sf::Vector2f DeltaVel = SubtractVectors(ScaleVector(-relativeVel, e), relativeVel);
+		sf::Vector2f DeltaVel = SubtractVectors(ScaleVector(-1.f*relativeVel, e), relativeVel);
 		//float numerator = (-(1.0f + e) * dotProduct(relativeVel, relativeNormal));
 		//float numerator = (-(1.0f + e) * dotProduct(DeltaVel, relativeNormal));
 		//float j = numerator / invMassSum;
-		float j = lengthofVector(DeltaVel) / invMassSum;
+		//float j = lengthofVector(DeltaVel) / invMassSum;
+		sf::Vector2f j = ScaleVector(DeltaVel, 1 / invMassSum);
 		//if (m.getContactPoints().size() > 0 && j != 0.0f) {
 			//j = j / float(m.getContactPoints().size());
 		//}
 
-		sf::Vector2f impulse = sf::Vector2f(ScaleVector(relativeNormal, j));
+		sf::Vector2f impulse = sf::Vector2f(MultiplyVectors(relativeNormal, j));
 		if (swapped) {
 			a.addPosition(ScaleVector(-relativeNormal, (m.getDepth() / 2)));
 			b.addPosition(ScaleVector(relativeNormal, (m.getDepth() / 2)));
@@ -368,7 +370,7 @@ public:
 		//b.addLocalForce(ScaleVector(impulse, 1));
 		return swapped == false ? std::tuple<RigidBody, RigidBody>(a, b) : std::tuple<RigidBody, RigidBody>(b, a);
 	}
-	RigidBody applyImpulse(RigidBody rb, CollisionManifold m, sf::Vector2f g, int sect) {
+	RigidBody applyImpulse(RigidBody rb, CollisionManifold m, int sect) {
 		//For collisions with bounds
 		sf::Vector2f Vel = SubtractVectors(sf::Vector2f(0.f,0.f),rb.getLinearVelocity());
 		sf::Vector2f relativeNormal = sf::Vector2f((normalise(m.getNormal())));
@@ -378,7 +380,7 @@ public:
 		float invMass = rb.getInverseMass();
 		float e = rb.getCor();
 		//float numerator = (-(1.f + e) * dotProduct(Vel, relativeNormal));
-		sf::Vector2f deltaVel = SubtractVectors(ScaleVector((-abs(Vel)), e), abs(Vel));
+		sf::Vector2f deltaVel = SubtractVectors(ScaleVector((-1.f*(Vel)), e), (Vel));
 		sf::Vector2f j = ScaleVector(deltaVel, 1 / invMass);
 		
 		
@@ -404,7 +406,7 @@ public:
 		case 3:
 			//if (abs(rb.getLinearVelocity().x) < 1.f) {
 			relativeNormal.x = abs(relativeNormal.x);
-			rb.setPosition(sf::Vector2f(rb.getPosition().x + m.getDepth(), rb.getPosition().y + m.getDepth()));
+			rb.setPosition(sf::Vector2f(rb.getPosition().x + m.getDepth(), rb.getPosition().y ));
 			j.x = abs(j.x);
 			break;
 
@@ -420,24 +422,27 @@ public:
 	}
 	RigidBody applyImpulse(RigidBody rb, CollisionManifold m) {
 		//For collisions with bounds
-		sf::Vector2f Vel = SubtractVectors(sf::Vector2f(0.f, 0.f), rb.getLinearVelocity());
-		sf::Vector2f relativeNormal = sf::Vector2f((normalise(-m.getNormal())));
+		sf::Vector2f Vel = rb.getLinearVelocity();
+		sf::Vector2f relativeNormal = sf::Vector2f(((m.getNormal())));
+		Vel = MultiplyVectors(Vel, relativeNormal);
 		//if (dotProduct(Vel, abs(relativeNormal)) > 0.f) { Vel = ScaleVector(Vel, -1.f); }
 
 
 		float invMass = rb.getInverseMass();
 		float e = rb.getCor();
 		//float numerator = (-(1.f + e) * dotProduct(Vel, relativeNormal));
-		sf::Vector2f deltaVel = SubtractVectors(ScaleVector((-abs(Vel)), e), abs(Vel));
+		sf::Vector2f deltaVel = SubtractVectors(ScaleVector((-1.f*(Vel)), e), (Vel));
 		float j = lengthofVector(deltaVel) / invMass;
+		//sf::Vector2f j = ScaleVector(deltaVel, 1/ invMass);
 
 
 
 		//j = numerator / (rb.getInverseMass());
+		//sf::Vector2f impulse = sf::Vector2f(MultiplyVectors(relativeNormal, j));
 		sf::Vector2f impulse = sf::Vector2f(ScaleVector(relativeNormal, j));
 		//rb.addLocalForce(ScaleVector(impulse, 1));
-		rb.setLinearVelocity(sf::Vector2f(AddVectors(rb.getLinearVelocity(), (ScaleVector(impulse, (invMass))))));
-		rb.setPosition(AddVectors(rb.getPosition(), ScaleVector(relativeNormal, m.getDepth())));
+		rb.setLinearVelocity(sf::Vector2f(AddVectors(rb.getLinearVelocity(), (ScaleVector(impulse, (-invMass))))));
+		rb.setPosition(AddVectors(rb.getPosition(), ScaleVector(relativeNormal, -m.getDepth())));
 		return rb;
 	}
 };

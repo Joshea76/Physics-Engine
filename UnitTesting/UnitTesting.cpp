@@ -5,8 +5,6 @@
 #include <boost/test/included/unit_test.hpp> //single-header
 // project being tested
 
-
-
 BOOST_AUTO_TEST_SUITE(RigidBody_Tests);
 
     BOOST_AUTO_TEST_CASE(Rigidbody_ID_Set)
@@ -23,9 +21,10 @@ BOOST_AUTO_TEST_SUITE(RigidBody_Tests);
     BOOST_AUTO_TEST_CASE(Rigidbody_Contsructor_Test1) {
         float expected_value = 3.14;
 
-        
 
-        BOOST_CHECK(expected_value == rb.getMass());
+        RigidBody rb0 = RigidBody(sf::Vector2f(1.f, 1.f), 3.14, 12.07);
+
+        BOOST_CHECK(expected_value == rb0.getMass());
     }
     BOOST_AUTO_TEST_CASE(Rigidbody_Contsructor_Test2) {
         float expected_value = 12.07;
@@ -136,7 +135,41 @@ BOOST_AUTO_TEST_SUITE(RigidBody_Tests);
         rb.node->id = 11;
         BOOST_CHECK(expected_value == rb.getNode()->id);
     }
-    //Need Force Accum TESTs / not implemented yet
+    BOOST_AUTO_TEST_CASE(Rigidbody_setCor_Test) {
+        float expected_value = 11;
+        rb.setCor(11);
+        BOOST_CHECK(expected_value == rb.getCor());
+    }
+    BOOST_AUTO_TEST_CASE(Rigidbody_physicsUpdate_Test1) {
+        sf::Vector2f expected_value = sf::Vector2f(0.0256f, 0.0256f);
+        rb.setMass(10);
+        rb.setPosition(sf::Vector2f(0.f, 0.f));
+        rb.setLinearVelocity(sf::Vector2f(0.f, 0.f));
+        rb.removeLocalForces();
+        rb.addForce(sf::Vector2f(10.f, 10.f));
+        rb.physicsUpdate(0.16);
+        BOOST_CHECK(floor(expected_value.x * 1000) == (floor(rb.getPosition().x * 1000)) && floor(expected_value.y * 1000) == (floor(rb.getPosition().y * 1000)));
+    }
+    BOOST_AUTO_TEST_CASE(Rigidbody_physicsUpdate_Test2) {
+        sf::Vector2f expected_value = sf::Vector2f(0.8256f, 0.8256f);
+        rb.setMass(10);
+        rb.setPosition(sf::Vector2f(0.f, 0.f));
+        rb.setLinearVelocity(sf::Vector2f(5.f, 5.f));
+        rb.removeLocalForces();
+        rb.addForce(sf::Vector2f(10.f, 10.f));
+        rb.physicsUpdate(0.16);
+        BOOST_CHECK(floor(expected_value.x * 1000) == (floor(rb.getPosition().x * 1000)) && floor(expected_value.y * 1000) == (floor(rb.getPosition().y * 1000)));
+    }
+    BOOST_AUTO_TEST_CASE(Rigidbody_physicsUpdate_Test_Neg) {
+        sf::Vector2f expected_value = sf::Vector2f(-0.0256f, -0.0256f);
+        rb.setMass(10);
+        rb.setPosition(sf::Vector2f(0.f, 0.f));
+        rb.setLinearVelocity(sf::Vector2f(0.f, 0.f));
+        rb.removeLocalForces();
+        rb.addForce(sf::Vector2f(-10.f, -10.f));
+        rb.physicsUpdate(0.16);
+        BOOST_CHECK(floor(expected_value.x * 1000) == (floor(rb.getPosition().x * 1000)) && floor(expected_value.y * 1000) == (floor(rb.getPosition().y * 1000)));
+    }
 
 
 BOOST_AUTO_TEST_SUITE_END();
@@ -657,7 +690,7 @@ BOOST_AUTO_TEST_SUITE(Collisions_Tests);
 
     }
     BOOST_AUTO_TEST_CASE(Collisions_findCollisionFeatures_Diagonal_Test_S_ContactPoint) {
-        sf::Vector2f expected_value = sf::Vector2f(141.824f, 141.824f);
+        sf::Vector2f expected_value = sf::Vector2f(117.324f, 117.324f);
         BOOST_CHECK(floor(expected_value.x * 1000) == floor(m_d2.getContactPoints()[0].x * 1000) && floor(expected_value.y * 1000) == floor(m_d2.getContactPoints()[0].y * 1000));
     }
 
@@ -738,3 +771,379 @@ BOOST_AUTO_TEST_SUITE(Section_Tests)
     }
 
 BOOST_AUTO_TEST_SUITE_END();
+
+
+BOOST_AUTO_TEST_SUITE(PhysicsSystem_Tests);
+// All variables are private adn there are no getters as there are no need
+// Therefore testing of constructors cannot occur
+BOOST_AUTO_TEST_CASE(PhysicsSystem_applyForces_Test_Pos) {
+    sf::Vector2f expected_value = sf::Vector2f(0.256f, 0.256f);
+    RigidBody r = RigidBody(sf::Vector2f(0.f, 0.f), 3.14, 12.07);
+    r.setMass(10);
+    std::vector<RigidBody> rb = { r };
+    std::vector<ForceGenerator> fg = { ForceGenerator(sf::Vector2f(10.f,10.f)) };
+    PhysicsSystem physics = PhysicsSystem(rb, fg);
+    rb = physics.applyForces(0.16);    
+    BOOST_CHECK(floor(expected_value.x * 100) == (floor(rb[0].getPosition().x * 100)) && floor(expected_value.y * 100) == (floor(rb[0].getPosition().y * 100)));
+}
+BOOST_AUTO_TEST_CASE(PhysicsSystem_applyForces_Test_Neg) {
+    sf::Vector2f expected_value = sf::Vector2f(-0.256f, -0.256f);
+    RigidBody r = RigidBody(sf::Vector2f(0.f, 0.f), 3.14, 12.07);
+    r.setMass(10);
+    std::vector<RigidBody> rb = { r };
+    std::vector<ForceGenerator> fg = { ForceGenerator(sf::Vector2f(-10.f,-10.f)) };
+    PhysicsSystem physics = PhysicsSystem(rb, fg);
+    rb = physics.applyForces(0.16);
+    BOOST_CHECK(floor(expected_value.x * 100) == (floor(rb[0].getPosition().x * 100)) && floor(expected_value.y * 100) == (floor(rb[0].getPosition().y * 100)));
+}
+
+BOOST_AUTO_TEST_CASE(PhysicsSystem_ApplyImpulse_TwoObj_Test1) {
+    //Cor Value of 0.5
+    sf::Vector2f expected_value1 = sf::Vector2f(38.8389f, 4.51084f);
+    sf::Vector2f expected_value2 = sf::Vector2f(-16.4391f, 29.3611f);
+    sf::Vector2f expected_value3 = sf::Vector2f(595.933f, 52.3431f);
+    sf::Vector2f expected_value4 = sf::Vector2f(581.819f, 63.616f);
+    RigidBody a = RigidBody(sf::Vector2f(595.176086f, 52.9475098f), 10);
+    a.setLinearVelocity(sf::Vector2f(-28.7999821f, 58.5359688f));
+    RigidBody b = RigidBody(sf::Vector2f(582.576050f, 63.0115242f), 10);
+    b.setLinearVelocity(sf::Vector2f(51.199741f, -24.6639881f));
+    CollisionManifold m = CollisionManifold(sf::Vector2f(0.781352997f, -0.624089301), -1.93703938);
+    PhysicsSystem physics = PhysicsSystem();
+    std::tuple<RigidBody, RigidBody> rbs = physics.applyImpulse(a, b, m);
+
+    // Check Velocity Resolution
+    BOOST_CHECK(floor(expected_value1.x * 1000) == (floor(std::get<0>(rbs).getLinearVelocity().x * 1000)) && floor(expected_value1.y * 1000) == (floor(std::get<0>(rbs).getLinearVelocity().y * 1000)));
+    BOOST_CHECK(floor(expected_value2.x * 1000) == (floor(std::get<1>(rbs).getLinearVelocity().x * 1000)) && floor(expected_value2.y * 1000) == (floor(std::get<1>(rbs).getLinearVelocity().y * 1000)));
+    // Check Depth Resolution
+    BOOST_CHECK(floor(expected_value3.x * 100) == (floor(std::get<0>(rbs).getPosition().x * 100)) && floor(expected_value3.y * 100) == (floor(std::get<0>(rbs).getPosition().y * 100)));
+    BOOST_CHECK(floor(expected_value4.x * 100) == (floor(std::get<1>(rbs).getPosition().x * 100)) && floor(expected_value4.y * 100) == (floor(std::get<1>(rbs).getPosition().y * 100)));
+
+}
+
+BOOST_AUTO_TEST_CASE(PhysicsSystem_ApplyImpulse_WallObj_Test_TopWall0) {
+    //Cor Value of 0.5
+    sf::Vector2f expected_value1 = sf::Vector2f(0.f, 2.5f);
+    sf::Vector2f expected_value2 = sf::Vector2f(150.f, 10.f);
+    RigidBody a = RigidBody(sf::Vector2f(150.f, 9.f), 10);
+    a.setLinearVelocity(sf::Vector2f(0.f, -5.f));
+    CollisionManifold m = CollisionManifold(sf::Vector2f(0.f, -1.f), 1);
+    PhysicsSystem physics = PhysicsSystem();
+    a = physics.applyImpulse(a, m, 0);
+
+
+
+    // Check Velocity Resolution
+    BOOST_CHECK(a.getLinearVelocity() == expected_value1);
+    // Check Depth Resolution
+    BOOST_CHECK(a.getPosition() == expected_value2);
+}
+BOOST_AUTO_TEST_CASE(PhysicsSystem_ApplyImpulse_WallObj_Test_RightWall1) {
+    //Cor Value of 0.5
+    sf::Vector2f expected_value1 = sf::Vector2f(-2.5f, 0.f);
+    sf::Vector2f expected_value2 = sf::Vector2f(790.f, 150.f);
+    RigidBody a = RigidBody(sf::Vector2f(791.f, 150.f), 10);
+    a.setLinearVelocity(sf::Vector2f(5.f,0.f));
+    CollisionManifold m = CollisionManifold(sf::Vector2f(-1.f, 0.f), 1);
+    PhysicsSystem physics = PhysicsSystem();
+    a = physics.applyImpulse(a, m, 1);
+
+    std::cout << a.getLinearVelocity().x << " " << a.getLinearVelocity().y << std::endl;
+    std::cout << a.getPosition().x << " " << a.getPosition().y << std::endl;
+
+    // Check Velocity Resolution
+    BOOST_CHECK(a.getLinearVelocity() == expected_value1);
+    // Check Depth Resolution
+    BOOST_CHECK(a.getPosition() == expected_value2);
+}
+BOOST_AUTO_TEST_CASE(PhysicsSystem_ApplyImpulse_WallObj_Test_BtmWall2) {
+    //Cor Value of 0.5
+    sf::Vector2f expected_value1 = sf::Vector2f(0.f, -2.5f);
+    sf::Vector2f expected_value2 = sf::Vector2f(150.f, 790.f);
+    RigidBody a = RigidBody(sf::Vector2f(150.f, 791.f), 10);
+    a.setLinearVelocity(sf::Vector2f(0.f, 5.f));
+    CollisionManifold m = CollisionManifold(sf::Vector2f(0.f, -1.f), 1);
+    PhysicsSystem physics = PhysicsSystem();
+    a = physics.applyImpulse(a, m, 2);
+
+    std::cout << a.getLinearVelocity().x << " " << a.getLinearVelocity().y << std::endl;
+    std::cout << a.getPosition().x << " " << a.getPosition().y << std::endl;
+
+    // Check Velocity Resolution
+    BOOST_CHECK(a.getLinearVelocity() == expected_value1);
+    // Check Depth Resolution
+    BOOST_CHECK(a.getPosition() == expected_value2);
+}
+BOOST_AUTO_TEST_CASE(PhysicsSystem_ApplyImpulse_WallObj_Test_LeftWall3) {
+    //Cor Value of 0.5
+    sf::Vector2f expected_value1 = sf::Vector2f(2.5f, 0.f);
+    sf::Vector2f expected_value2 = sf::Vector2f(10.f, 150.f);
+    RigidBody a = RigidBody(sf::Vector2f(9.f, 150.f), 10);
+    a.setLinearVelocity(sf::Vector2f(-5.f, 0.f));
+    CollisionManifold m = CollisionManifold(sf::Vector2f(1.f, 0.f), 1);
+    PhysicsSystem physics = PhysicsSystem();
+    a = physics.applyImpulse(a, m, 3);
+
+    std::cout << a.getLinearVelocity().x << " " << a.getLinearVelocity().y << std::endl;
+    std::cout << a.getPosition().x << " " << a.getPosition().y << std::endl;
+
+    // Check Velocity Resolution
+    BOOST_CHECK(a.getLinearVelocity() == expected_value1);
+    // Check Depth Resolution
+    BOOST_CHECK(a.getPosition() == expected_value2);
+}
+
+BOOST_AUTO_TEST_CASE(PhysicsSystem_ApplyImpulse_LineObj_Test1) {
+    //Cor Value of 0.5
+    sf::Vector2f expected_value1 = sf::Vector2f(2.5f, -2.5f);
+    sf::Vector2f expected_value2 = sf::Vector2f(100.707f, 99.2929f);
+    RigidBody a = RigidBody(sf::Vector2f(100.f, 100.f), 10);
+    a.setLinearVelocity(sf::Vector2f(-5.f, 5.f));
+    CollisionManifold m = CollisionManifold(sf::Vector2f(0.707107f, -0.707107f), 1);
+    PhysicsSystem physics = PhysicsSystem();
+    a = physics.applyImpulse(a, m);
+
+    std::cout << a.getLinearVelocity().x << " " << a.getLinearVelocity().y << std::endl;
+    std::cout << a.getPosition().x << " " << a.getPosition().y << std::endl;
+
+    // Check Velocity Resolution
+    BOOST_CHECK(a.getLinearVelocity() == expected_value1);
+    // Check Depth Resolution
+    BOOST_CHECK(a.getPosition() == expected_value2);
+}
+
+
+BOOST_AUTO_TEST_SUITE_END();
+
+
+
+BOOST_AUTO_TEST_SUITE(QuadTree_Tests);
+
+
+BOOST_AUTO_TEST_CASE(QuadTree_Create_Test) {
+
+    // Ids
+    std::vector<int> objIDs = { 0 };
+    //Objects:
+    std::vector<Circle> circles{};
+    //Root Node
+    Quad root = Quad(sf::Vector2f(0, 0), sf::Vector2f(800, 800));
+
+    //Sorting Circles
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            Circle circ(((objIDs.back()) + 1), sf::Vector2f((i * 200.f) + 100.f, (j * 200.f) + 100.f), 35.f, 0.0f, sf::Color(0.f, 0.f, 255.f));
+            objIDs.push_back(objIDs.back() + 1); // create id
+            circ.rigidbody.setMass(10.f);
+            circles.push_back(circ);
+        }
+    }
+    // Creating Tree
+    for (int i = 0; i < circles.size(); i++) {
+        Node* n = circles[i].rigidbody.getNode();
+        root.insert(n);
+    }
+    /* 
+    // Sorting Algorithm:
+        std::vector<Quad*> quads = {};
+        root.getLowestQuads(&root, &quads);
+    */
+    int expected_value = -842150451;
+
+    // Root Node is null
+    BOOST_CHECK(root.n->id == expected_value);
+    // Children of Root is Node Null
+    BOOST_CHECK(root.topLeftTree->n->id == expected_value);
+    BOOST_CHECK(root.topRightTree->n->id == expected_value);
+    BOOST_CHECK(root.btmLeftTree->n->id == expected_value);
+    BOOST_CHECK(root.btmRightTree->n->id == expected_value);
+    // All chidlren of Root Children are Nodes
+    //      Top Left Tree:
+    BOOST_CHECK(root.topLeftTree->topLeftTree->n->id == 1);
+    BOOST_CHECK(root.topLeftTree->topRightTree->n->id == 5);
+    BOOST_CHECK(root.topLeftTree->btmLeftTree->n->id == 2);
+    BOOST_CHECK(root.topLeftTree->btmRightTree->n->id == 6);
+    //      Top Right Tree:
+    BOOST_CHECK(root.topRightTree->topLeftTree->n->id == 9);
+    BOOST_CHECK(root.topRightTree->topRightTree->n->id == 13);
+    BOOST_CHECK(root.topRightTree->btmLeftTree->n->id == 10);
+    BOOST_CHECK(root.topRightTree->btmRightTree->n->id == 14);
+    //      Bottom Left Tree:
+    BOOST_CHECK(root.btmLeftTree->topLeftTree->n->id == 3);
+    BOOST_CHECK(root.btmLeftTree->topRightTree->n->id == 7);
+    BOOST_CHECK(root.btmLeftTree->btmLeftTree->n->id == 4);
+    BOOST_CHECK(root.btmLeftTree->btmRightTree->n->id == 8);
+    //      Bottom Right Tree:
+    BOOST_CHECK(root.btmRightTree->topLeftTree->n->id == 11);
+    BOOST_CHECK(root.btmRightTree->topRightTree->n->id == 15);
+    BOOST_CHECK(root.btmRightTree->btmLeftTree->n->id == 12);
+    BOOST_CHECK(root.btmRightTree->btmRightTree->n->id == 16);
+}
+
+BOOST_AUTO_TEST_CASE(Quadtree_OrganiseQuads_Test) {
+
+    // Ids
+    std::vector<int> objIDs = { 0 };
+    //Objects:
+    std::vector<Circle> circles{};
+    //Root Node
+    Quad root = Quad(sf::Vector2f(0, 0), sf::Vector2f(800, 800));
+
+    //Sorting Circles
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            Circle circ(((objIDs.back()) + 1), sf::Vector2f((i * 200.f) + 100.f, (j * 200.f) + 100.f), 35.f, 0.0f, sf::Color(0.f, 0.f, 255.f));
+            objIDs.push_back(objIDs.back() + 1); // create id
+            circ.rigidbody.setMass(10.f);
+            circles.push_back(circ);
+        }
+    }
+    // Creating Tree
+    for (int i = 0; i < circles.size(); i++) {
+        Node* n = circles[i].rigidbody.getNode();
+        root.insert(n);
+    }
+    // Sorting Algorithm:
+    std::vector<Quad*> quads = {};
+    root.getLowestQuads(&root, &quads);
+    
+    int expected_value = -842150451;
+
+    // Check Size of List
+    BOOST_CHECK(quads.size() == 4);
+    // Check Nodes in list are Null
+    BOOST_CHECK(quads[0]->n->id == expected_value);
+    BOOST_CHECK(quads[1]->n->id == expected_value);
+    BOOST_CHECK(quads[2]->n->id == expected_value);
+    BOOST_CHECK(quads[3]->n->id == expected_value);
+    // All chidlren of Quad Nodes are Nodes
+    //      Top Left Tree:
+    BOOST_CHECK(quads[0]->topLeftTree->n->id == 1);
+    BOOST_CHECK(quads[0]->topRightTree->n->id == 5);
+    BOOST_CHECK(quads[0]->btmLeftTree->n->id == 2);
+    BOOST_CHECK(quads[0]->btmRightTree->n->id == 6);
+    //      Top Right Tree:
+    BOOST_CHECK(quads[1]->topLeftTree->n->id == 9);
+    BOOST_CHECK(quads[1]->topRightTree->n->id == 13);
+    BOOST_CHECK(quads[1]->btmLeftTree->n->id == 10);
+    BOOST_CHECK(quads[1]->btmRightTree->n->id == 14);
+    //      Bottom Left Tree:
+    BOOST_CHECK(quads[2]->topLeftTree->n->id == 3);
+    BOOST_CHECK(quads[2]->topRightTree->n->id == 7);
+    BOOST_CHECK(quads[2]->btmLeftTree->n->id == 4);
+    BOOST_CHECK(quads[2]->btmRightTree->n->id == 8);
+    //      Bottom Right Tree:
+    BOOST_CHECK(quads[3]->topLeftTree->n->id == 11);
+    BOOST_CHECK(quads[3]->topRightTree->n->id == 15);
+    BOOST_CHECK(quads[3]->btmLeftTree->n->id == 12);
+    BOOST_CHECK(quads[3]->btmRightTree->n->id == 16);
+}
+
+BOOST_AUTO_TEST_CASE(Quadtree_Sorter_Test1) {
+
+    // Ids
+    std::vector<int> objIDs = { 0 };
+    //Objects:
+    std::vector<Circle> circles{};
+    //Objects in potential Collision
+    std::vector<Circle> circleCollisions = {};
+    //Root Node
+    Quad root = Quad(sf::Vector2f(0, 0), sf::Vector2f(800, 800));
+
+    //Sorting Circles
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            Circle circ(((objIDs.back()) + 1), sf::Vector2f((i * 200.f) + 100.f, (j * 200.f) + 100.f), 35.f, 0.0f, sf::Color(0.f, 0.f, 255.f));
+            objIDs.push_back(objIDs.back() + 1); // create id
+            circ.rigidbody.setMass(10.f);
+            circles.push_back(circ);
+        }
+    }
+    // Creating Tree
+    for (int i = 0; i < circles.size(); i++) {
+        Node* n = circles[i].rigidbody.getNode();
+        root.insert(n);
+    }
+    // Sorting Algorithm:
+    std::vector<Quad*> quads = {};
+    root.getLowestQuads(&root, &quads);
+
+    int expected_value = 4;
+
+    for (int i = 0; i < quads.size(); i++) {
+
+        Sorter sorter = Sorter();
+        sorter.sort(quads[i], circles);
+        circleCollisions = sorter.circleCols;
+
+        BOOST_CHECK(circleCollisions.size() == expected_value);
+    }
+
+}
+BOOST_AUTO_TEST_CASE(Quadtree_Sorter_Test2) {
+
+    // Ids
+    std::vector<int> objIDs = { 0 };
+    //Objects:
+    std::vector<Circle> circles{};
+    //Objects in potential Collision
+    std::vector<Circle> circleCollisions = {};
+    // Collsision Manifolds for collisions
+    std::vector<CollisionManifold> collisions = {};
+    // Objects in collsion according to the Collision Manifolds above
+    std::vector<RigidBody> bodies1 = {};
+    std::vector<RigidBody> bodies2 = {};
+    // Measure Potential collisions between bodies
+    CollisionManifold result = CollisionManifold();
+    //Root Node
+    Quad root = Quad(sf::Vector2f(0, 0), sf::Vector2f(800, 800));
+
+    //Sorting Circles
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            Circle circ(((objIDs.back()) + 1), sf::Vector2f((i * 200.f) + 100.f, (j * 200.f) + 100.f), 35.f, 0.0f, sf::Color(0.f, 0.f, 255.f));
+            objIDs.push_back(objIDs.back() + 1); // create id
+            circ.rigidbody.setMass(10.f);
+            circles.push_back(circ);
+        }
+    }
+    // Creating Tree
+    for (int i = 0; i < circles.size(); i++) {
+        Node* n = circles[i].rigidbody.getNode();
+        root.insert(n);
+    }
+    // Sorting Algorithm:
+    std::vector<Quad*> quads = {};
+    root.getLowestQuads(&root, &quads);
+
+    int expected_value = 4;
+
+    for (int i = 0; i < quads.size(); i++) {
+
+        Sorter sorter = Sorter();
+        sorter.sort(quads[i], circles);
+        circleCollisions = sorter.circleCols;
+
+
+        if (circleCollisions.size() >= 2) {
+            for (int c1 = 0; c1 < circleCollisions.size(); c1++) {
+                for (int c2 = 0; c2 < circleCollisions.size(); c2++) {
+                    if (c1 != c2) {
+                        result = Collisions().findcollisionfeatures(circleCollisions[c1], circleCollisions[c2]);
+                        if (result != CollisionManifold() && result.isColliding()) {
+                            bodies1.push_back(circleCollisions[c1].rigidbody);
+                            bodies2.push_back(circleCollisions[c2].rigidbody);
+                            collisions.push_back(result);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    BOOST_CHECK(bodies1.empty());
+    BOOST_CHECK(bodies2.empty());
+    BOOST_CHECK(collisions.empty());
+
+}
+
+BOOST_AUTO_TEST_SUITE_END();
+

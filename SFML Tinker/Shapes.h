@@ -37,7 +37,7 @@ private:
     sf::Vector2f position, linearVelocity, forceAccum;
     sf::Vector2f linearDamping = sf::Vector2f(0.999999f, 0.999999f);
     float rotation, angularVeclocity, angularDamping, mass, inversemass;
-    float coefficientRestitution = 0.5f;
+    float coefficientRestitution = 0.8f;
     bool fixedRotation;
 
     std::vector<ForceGenerator> localForces = {};
@@ -60,14 +60,14 @@ public:
     RigidBody(sf::Vector2f position, float mass, float rotation) {
         this->position = position;
         this->node->pos = position;
-        this->mass = mass;
+        this->setMass(mass);
         this->rotation = rotation;
         sections.reset();
     }
     RigidBody(sf::Vector2f position, float mass){
         this->position = position;
         this->node->pos = position;
-        this->mass = mass;
+        this->setMass(mass);
         sections.reset();
     }
     RigidBody(sf::Vector2f position) {

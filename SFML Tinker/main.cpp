@@ -80,8 +80,8 @@ void testScreen() {
 
 
     //Shit tonne of circles
-    for (int i = 1; i < 11; i++) {
-        for (int j = 1; j < 13; j++){
+    for (int i = 1; i < 6; i++) {
+        for (int j = 1; j < 8; j++){
         Circle circ(((objIDs.back()) + 1), sf::Vector2f((i*51.f) + 150.f, (j*25.f)), 10.f, 0.0f, sf::Color(0.f, 0.f, 255.f));
         objIDs.push_back(objIDs.back() + 1); // create id
         circ.rigidbody.setMass(10.f);
@@ -111,7 +111,7 @@ void testScreen() {
     triangle[1].color = sf::Color::Green;
     triangle[2].color = sf::Color::Red;
 
-    /*
+    
     // TRIANGLE
     sf::VertexArray triangle2(sf::Triangles, 3);
 
@@ -124,7 +124,7 @@ void testScreen() {
     triangle2[0].color = sf::Color::Red;
     triangle2[1].color = sf::Color::Green;
     triangle2[2].color = sf::Color::Red;
-    */
+    
    
     std::vector<Rect> rectangles{};
     /*
@@ -239,38 +239,39 @@ void testScreen() {
             if (circles[i].rigidbody.sections.S1 || circles[i].rigidbody.sections.S2) { // Top wall
                 CollisionManifold wallCollide = IntersectionDetection().wallCollide(std::vector<sf::Vertex>{Bounds[0], Bounds[1]}, circles[i]);
                 if (wallCollide != CollisionManifold() && wallCollide.isColliding()) {
-                    Objects[i] = physics.applyImpulse(Objects[i], wallCollide, gravity.getForce(),0);
+                    Objects[i] = physics.applyImpulse(Objects[i], wallCollide,0);
                 }
             }
             if (circles[i].rigidbody.sections.S2 || circles[i].rigidbody.sections.S3) { // Right wall
                 CollisionManifold wallCollide = IntersectionDetection().wallCollide(std::vector<sf::Vertex>{Bounds[1], Bounds[2]}, circles[i]);
                 if (wallCollide != CollisionManifold() && wallCollide.isColliding()) {
-                    Objects[i] = physics.applyImpulse(Objects[i], wallCollide, gravity.getForce(),1);
+                    Objects[i] = physics.applyImpulse(Objects[i], wallCollide,1);
                     //std::cout << " Force for " << i << " : " << Objects[i].getForceAccum().x << std::endl;
                 }
             }
             if (circles[i].rigidbody.sections.S3 || circles[i].rigidbody.sections.S4) { // Bottom wall
                 CollisionManifold wallCollide = IntersectionDetection().wallCollide(std::vector<sf::Vertex>{Bounds[3], Bounds[2]}, circles[i]);
                 if (wallCollide != CollisionManifold() && wallCollide.isColliding()) {
-                    Objects[i] = physics.applyImpulse(Objects[i], wallCollide, gravity.getForce(),2);
+                    Objects[i] = physics.applyImpulse(Objects[i], wallCollide,2);
                 }
                 CollisionManifold tCollide = IntersectionDetection().wallCollide(std::vector<sf::Vertex>{triangle[0],triangle[2]}, circles[i]);
                 if (tCollide != CollisionManifold() && tCollide.isColliding()) {
                     Objects[i] = physics.applyImpulse(Objects[i], tCollide);
                 }
+
+                CollisionManifold tCollide2 = IntersectionDetection().wallCollide(std::vector<sf::Vertex>{triangle2[0], triangle2[2]}, circles[i]);
+                if (tCollide2 != CollisionManifold() && tCollide2.isColliding()) {
+                    Objects[i] = physics.applyImpulse(Objects[i], tCollide2);
+                }
             }
             if (circles[i].rigidbody.sections.S4 || circles[i].rigidbody.sections.S1) { // Left wall
                 CollisionManifold wallCollide = IntersectionDetection().wallCollide(std::vector<sf::Vertex>{Bounds[0], Bounds[3]}, circles[i]);
                 if (wallCollide != CollisionManifold() && wallCollide.isColliding()) {
-                    Objects[i] = physics.applyImpulse(Objects[i], wallCollide, gravity.getForce(),3);
+                    Objects[i] = physics.applyImpulse(Objects[i], wallCollide,3);
                     //std::cout << " Force for " << i << " : " << Objects[i].getForceAccum().x << std::endl;
                 }
-                /*
-                CollisionManifold tCollide = IntersectionDetection().wallCollide(std::vector<sf::Vertex>{triangle2[0], triangle2[2]}, circles[i]);
-                if (tCollide != CollisionManifold() && tCollide.isColliding()) {
-                    Objects[i] = physics.applyImpulse(Objects[i], tCollide);
-                }
-                */
+
+                
             }
         }
         
@@ -293,20 +294,27 @@ void testScreen() {
         for (int i = 0; i < circles.size(); i++) { window.draw(circles[i].outputShape()); }
 
         window.draw(triangle);
-        //window.draw(triangle2);
+        window.draw(triangle2);
         window.display();
     }
 }
 
-/*
+
 void treeTesting() {
     sf::RenderWindow window(sf::VideoMode(800, 800), "Window");
 
     PhysicsSystem physics = PhysicsSystem();
-
+    // Ids
     std::vector<int> objIDs = { 0 };
-
+    //Objects:
     std::vector<Circle> circles{};
+    //Objects in potential Collision
+    std::vector<Circle> circleCollisions = {};
+
+    std::vector<CollisionManifold> collisions = {};
+    std::vector<RigidBody> bodies1 = {};
+    std::vector<RigidBody> bodies2 = {};
+    CollisionManifold result = CollisionManifold();
 
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
@@ -336,12 +344,36 @@ void treeTesting() {
             window.draw(circles[i].outputShape());
 
         }
-        std::list<Quad*> quads = {};
+        std::vector<Quad*> quads = {};
         root.getLowestQuads(&root, &quads);
+
+        for (int i = 0; i < quads.size(); i++) {
+
+            Sorter sorter = Sorter();
+            sorter.sort(quads[i], circles);
+            circleCollisions = sorter.circleCols;
+
+
+
+            if (circleCollisions.size() >= 2) {
+                for (int c1 = 0; c1 < circleCollisions.size(); c1++) {
+                    for (int c2 = 0; c2 < circleCollisions.size(); c2++) {
+                        if (c1 != c2) {
+                            result = Collisions().findcollisionfeatures(circleCollisions[c1], circleCollisions[c2]);
+                            if (result != CollisionManifold() && result.isColliding()) {
+                                bodies1.push_back(circleCollisions[c1].rigidbody);
+                                bodies2.push_back(circleCollisions[c2].rigidbody);
+                                collisions.push_back(result);
+                            }
+                        }
+                    }
+                }
+            }
+        }
         window.display();
     }
 }
-*/
+
 
 int main() {
     //movingBox();
