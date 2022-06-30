@@ -465,9 +465,7 @@ public:
 	}
 	Quadtree(std::vector<sf::Vertex> bounds) {
 		this->bounds = bounds;
-		vLine = {};
-		hLine = {};
-		createLines();
+		this->createLines();
 	}
 
 	void createLines() {

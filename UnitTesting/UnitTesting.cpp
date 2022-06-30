@@ -1149,29 +1149,34 @@ BOOST_AUTO_TEST_CASE(Quadtree_Sorter_Test2) {
 
 BOOST_AUTO_TEST_SUITE_END();
 
-BOOST_AUTO_TEST_SUITE(SectionQuadtree_Tests)
-/*
+BOOST_AUTO_TEST_SUITE(SectionQuadtree_Tests);
+
 BOOST_AUTO_TEST_CASE(SectionQuadtree_Constructor_Test1) {
-    std::vector<sf::Vertex> bounds = { sf::Vertex(sf::Vector2f(0.f,0.f)), sf::Vertex(sf::Vector2f(800.f,800.f)) };
-    Quadtree q = Quadtree(bounds);
+    std::vector<sf::Vertex> Bounds; 
+    Bounds.push_back(sf::Vertex(sf::Vector2f(0.f, 0.f)));     //top left
+    Bounds.push_back(sf::Vertex(sf::Vector2f(800.f, 0.f)));   //top right
+    Bounds.push_back(sf::Vertex(sf::Vector2f(800.f, 800.f))); //bottom right
+    Bounds.push_back(sf::Vertex(sf::Vector2f(0.f, 800.f)));   //bottom left
+
+    Quadtree q;
+    q = Quadtree(Bounds);
     BOOST_CHECK(q.bounds.size() > 0);
+
     std::vector<sf::Vector2f> expected_value_Vline = { sf::Vector2f(400.f,0.f), sf::Vector2f(400.f,800.f) };
     std::vector<sf::Vector2f> expected_value_Hline = { sf::Vector2f(0.f,400.f), sf::Vector2f(800.f,400.f) };
 
-    std::cout << q.vLine.size() << " " << q.hLine.size();
-    /*
-    std::cout << q.vLine[0].x << " , " << q.vLine[0].y << " | " << q.vLine[1].x << " , " << q.vLine[1].y << std::endl;
-    std::cout << q.hLine[0].x << " , " << q.hLine[0].y << " | " << q.hLine[1].x << " , " << q.hLine[1].y << std::endl;
-
-
     BOOST_CHECK(q.vLine[0] == expected_value_Vline[0] && q.vLine[1] == expected_value_Vline[1]);
-    BOOST_CHECK(q.hLine[0] == expected_value_Vline[0] && q.hLine[1] == expected_value_Vline[1]);
-    */
-//}
+    BOOST_CHECK(q.hLine[0] == expected_value_Hline[0] && q.hLine[1] == expected_value_Hline[1]);
+    
+}
 
 BOOST_AUTO_TEST_CASE(SectionQuadtree_sortCircles_Test) {
-    std::vector<sf::Vertex> bounds = { sf::Vertex(sf::Vector2f(0.f,0.f)), sf::Vertex(sf::Vector2f(800.f,800.f)) };
-    Quadtree q = Quadtree(bounds);
+    std::vector<sf::Vertex> Bounds;
+    Bounds.push_back(sf::Vertex(sf::Vector2f(0.f, 0.f)));     //top left
+    Bounds.push_back(sf::Vertex(sf::Vector2f(800.f, 0.f)));   //top right
+    Bounds.push_back(sf::Vertex(sf::Vector2f(800.f, 800.f))); //bottom right
+    Bounds.push_back(sf::Vertex(sf::Vector2f(0.f, 800.f)));   //bottom left
+    Quadtree q = Quadtree(Bounds);
     Circle a = Circle(1, sf::Vector2f(200.f, 200.f), 10);
     Circle b = Circle(2, sf::Vector2f(600.f, 200.f), 10);
     Circle c = Circle(3, sf::Vector2f(600.f, 600.f), 10);
