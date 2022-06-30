@@ -573,22 +573,5 @@ public:
 
 	
 
-	void setrbsCircles(std::vector<Circle> circles) {
-		for (int i = 0; i < circles.size(); i++) {
-			if (circles[i].rigidbody.sections.S1) {
-				s1Rbs.push_back(circles[i]);
-			}
-			if (circles[i].rigidbody.sections.S2) {
-				s2Rbs.push_back(circles[i]);
-			}
-			if (circles[i].rigidbody.sections.S3) {
-				s3Rbs.push_back(circles[i]);
-			}
-			if (circles[i].rigidbody.sections.S4) {
-				s4Rbs.push_back(circles[i]);
-			}
-		}
-	}
-
 
 };
