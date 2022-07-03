@@ -213,7 +213,6 @@
     <ClInclude Include="ForceGenerator.h" />
     <ClInclude Include="Functions.h" />
     <ClInclude Include="Quadtree.h" />
-    <ClInclude Include="Raycast.h" />
     <ClInclude Include="Shapes.h" />
   </ItemGroup>
   <ItemGroup>

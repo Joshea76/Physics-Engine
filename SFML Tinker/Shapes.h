@@ -292,7 +292,7 @@ public:
 
     void setRadius(float r) { radius = r; self.setRadius(r); }
     float getRadius() { 
-        return this->radius;//self.getRadius();
+        return this->radius;
     }
 
     
@@ -425,14 +425,6 @@ public:
     void setAccX(float x) { acceleration.x = x; }
     void setAccY(float y) { acceleration.y = y; }
 
-    /*
-    int insideMe(sf::Vector2i mousepos) {
-        if (mousepos.x > Vertices[0].position.x && mousepos.x < Vertices[3].position.x && mousepos.y > Vertices[0].position.y && mousepos.y < Vertices[3].position.y) {
-            return 1;
-        }
-        else { return 0; }
-    }
-    */
 
     sf::Vector2f getLocalMin() {
         return sf::Vector2f(rigidbody.getPosition().x - size.x / 2, rigidbody.getPosition().y - size.y / 2);

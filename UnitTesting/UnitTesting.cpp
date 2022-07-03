@@ -5,10 +5,12 @@
 #include <boost/test/included/unit_test.hpp> //single-header
 // project being tested
 
-BOOST_AUTO_TEST_SUITE(RigidBody_Tests);
+
+BOOST_AUTO_TEST_SUITE(RigidBody_Tests, * boost::unit_test::label("trivial"));
 
     BOOST_AUTO_TEST_CASE(Rigidbody_ID_Set)
     {
+
         int expected_value = 1;
 
         RigidBody rb;
